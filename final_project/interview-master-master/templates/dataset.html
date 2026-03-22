@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% block title %}{{ topic_id }} Dataset - Interview Master{% endblock %}
+
+{% block head %}
+<style>
+    .dataset-main {
+        padding: 80px 0 60px;
+        background: linear-gradient(160deg, #eef2ff 0%, #f8f9fc 50%, #f0fdf9 100%);
+        min-height: 100vh;
+    }
+
+    .dataset-header {
+        background: linear-gradient(135deg, #6c63ff 0%, #a855f7 100%);
+        border-radius: 20px;
+        padding: 40px;
+        color: #fff;
+        margin-bottom: 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dataset-header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataset-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
+
+    .qa-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .qa-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        padding-right: 70px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+        position: relative;
+    }
+
+    .qa-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(108, 99, 255, 0.15);
+        border-color: rgba(108, 99, 255, 0.3);
+    }
+
+    .btn-solve-float {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        background: #000;
+        color: #fff;
+        width: 45px;
+        height: 54px;
+        border-radius: 27px 0 0 27px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        transition: right 0.2s, background 0.2s, width 0.2s;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 2;
+        font-size: 1.2rem;
+    }
+
+    .btn-solve-float:hover {
+        background: #6c63ff;
+        width: 55px;
+    }
+
+    .qa-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .qa-category {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #6c63ff;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .qa-diff {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 8px;
+    }
+
+    .diff-easy {
+        background: rgba(0, 184, 148, 0.15);
+        color: #00b894;
+    }
+
+    .diff-medium {
+        background: rgba(243, 156, 18, 0.15);
+        color: #e67e22;
+    }
+
+    .diff-hard {
+        background: rgba(232, 67, 147, 0.15);
+        color: #e84393;
+    }
+
+    .qa-question {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a1a2e;
+        line-height: 1.5;
+    }
+
+    .back-btn-container {
+        max-width: 800px;
+        margin: 0 auto 20px;
+    }
+
+    .btn-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #555570;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .btn-back-link:hover {
+        color: #6c63ff;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<nav class="navbar glass-nav">
+    <div class="nav-container">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">
+            <i class="fas fa-bolt"></i>
+            <span>Interview<strong>Master</strong></span>
+        </a>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+        </div>
+    </div>
+</nav>
+
+<main class="dataset-main">
+    <div class="container">
+        <div class="back-btn-container">
+            <a href="{{ url_for('setup') }}" class="btn-back-link"><i class="fas fa-arrow-left"></i> Back to Setup</a>
+        </div>
+
+        <div class="dataset-header animate-fade-in">
+            <h1>{{ topic_id }} Dataset</h1>
+            <p>A curated collection of top interview questions for {{ topic_id }}</p>
+        </div>
+
+        <div class="qa-container animate-slide-up">
+            {% for q in questions %}
+            <div class="qa-card">
+                <a href="{{ url_for('compiler', q=q.question, diff=q.difficulty) }}" target="_blank"
+                    class="btn-solve-float" title="Execute in Compiler">
+                    <i class="fas fa-play" style="margin-left:4px;"></i>
+                </a>
+                <div class="qa-header">
+                    <span class="qa-category"><i class="fas fa-tag"></i> {{ q.category }}</span>
+                    <span class="qa-diff 
+                        {% if q.difficulty == 'Easy' %}diff-easy
+                        {% elif q.difficulty == 'Medium' %}diff-medium
+                        {% else %}diff-hard{% endif %}
+                    ">{{ q.difficulty }}</span>
+                </div>
+                <div class="qa-question">
+                    {{ q.question }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+{% endblock %}

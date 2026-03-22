@@ -1,0 +1,22 @@
+[
+    {
+        "question": "What is the Virtual DOM in React and why is it fast?",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Explain the useEffect hook lifecycle",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "How do you pass data between sibling components?",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "What is React Context API and when should you use it over Redux?",
+        "difficulty": "Medium",
+        "category": "Technical"
+    }
+]

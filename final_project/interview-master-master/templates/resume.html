@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% block title %}My Resume - Interview Master{% endblock %}
+
+{% block body %}
+<nav class="navbar glass-nav">
+    <div class="nav-container">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">
+            <i class="fas fa-bolt"></i>
+            <span>Interview<strong>Master</strong></span>
+        </a>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="{{ url_for('logout') }}" class="nav-btn nav-btn-outline" id="navLogoutResume"><i
+                    class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="setup-main">
+    <div class="container">
+        <div class="setup-wrapper animate-fade-in" style="max-width:680px;">
+
+            <!-- Page Header -->
+            <div class="setup-header">
+                <h1><i class="fas fa-file-user" style="color:var(--accent-3)"></i> My <span
+                        class="gradient-text">Resume</span></h1>
+                <p>Upload your resume once and it will be automatically used in all your future interview sessions.</p>
+            </div>
+
+            <!-- Current Resume Card -->
+            {% if resume %}
+            <div class="rp-current glass-card" id="currentResumeCard">
+                <div class="rp-current-header">
+                    <span class="rp-status-chip"><i class="fas fa-check-circle"></i> Resume Active</span>
+                    <span class="rp-upload-date"><i class="fas fa-calendar-alt"></i> Uploaded {{ resume.uploaded_at[:10]
+                        }}</span>
+                </div>
+                <div class="rp-file-row">
+                    <div class="rp-file-icon"><i class="fas fa-file-pdf"></i></div>
+                    <div class="rp-file-info">
+                        <span class="rp-file-name">{{ resume.filename }}</span>
+                        <span class="rp-file-sub">PDF Document · Saved permanently</span>
+                    </div>
+                    <div class="rp-file-actions">
+                        <button class="btn btn-glass btn-sm" onclick="toggleReplaceArea()" id="replaceToggleBtn">
+                            <i class="fas fa-exchange-alt"></i> Replace
+                        </button>
+                    </div>
+                </div>
+                {% if resume.extracted_text %}
+                <div class="rp-preview-wrap" id="resumePreviewWrap">
+                    <button class="rp-preview-toggle" onclick="togglePreview()" id="previewToggleBtn">
+                        <i class="fas fa-eye"></i> Preview Extracted Text
+                        <i class="fas fa-chevron-down" id="previewChevron"></i>
+                    </button>
+                    <div class="rp-preview-text" id="resumePreviewText" style="display:none;">
+                        {{ resume.extracted_text[:1200] }}{% if resume.extracted_text|length > 1200 %}…{% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Upload / Replace Form -->
+            <div class="rp-upload-card glass-card" id="uploadCard" {% if resume %}style="display:none;" {% endif %}>
+                {% if not resume %}
+                <div class="rp-no-resume">
+                    <div class="rp-no-resume-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3>No Resume Uploaded Yet</h3>
+                    <p>Upload your PDF resume to tailor AI interview questions to your background and skills.</p>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('upload_resume') }}" enctype="multipart/form-data"
+                    id="resumeUploadForm">
+                    <div class="rp-dropzone" id="rpDropzone">
+                        <input type="file" id="resumeFile" name="resume" accept=".pdf" class="upload-input"
+                            onchange="handleRpFileSelect(this)">
+                        <div class="rp-drop-idle" id="rpDropIdle">
+                            <div class="rp-drop-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <p class="rp-drop-title">Drag &amp; drop your PDF resume here</p>
+                            <p class="rp-drop-sub">or <strong>click to browse files</strong></p>
+                            <span class="rp-drop-hint">PDF format only · Max 5MB</span>
+                        </div>
+                        <div class="rp-drop-selected" id="rpDropSelected" style="display:none;">
+                            <i class="fas fa-file-pdf rp-sel-icon"></i>
+                            <div class="rp-sel-info">
+                                <span class="rp-sel-name" id="rpSelName"></span>
+                                <span class="rp-sel-size" id="rpSelSize"></span>
+                            </div>
+                            <button type="button" class="btn btn-glass btn-xs" onclick="clearRpFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="rp-form-actions">
+                        {% if resume %}
+                        <button type="button" class="btn btn-glass" onclick="toggleReplaceArea()">
+                            <i class="fas fa-arrow-left"></i> Cancel
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-glass">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary" id="rpUploadBtn" disabled>
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>{{ 'Replace Resume' if resume else 'Upload Resume' }}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Info Banner -->
+            <div class="rp-info-banner">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>How it works:</strong> Your resume is extracted and stored securely. The AI uses it to
+                    generate personalized questions tailored to your actual skills and experience — every interview
+                    session.
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="rp-cta">
+                <a href="{{ url_for('setup') }}" class="btn btn-primary btn-lg" id="startWithResumeBtn">
+                    <i class="fas fa-rocket"></i>
+                    <span>Start Interview Session</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script>
+    // ---- Drag & Drop ----
+    const dropzone = document.getElementById('rpDropzone');
+    if (dropzone) {
+        dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('rp-drag-over'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('rp-drag-over'));
+        dropzone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropzone.classList.remove('rp-drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file) applyFile(file);
+        });
+    }
+
+    function handleRpFileSelect(input) {
+        if (input.files && input.files[0]) applyFile(input.files[0]);
+    }
+
+    function applyFile(file) {
+        if (!file.name.endsWith('.pdf')) { alert('Please select a PDF file.'); return; }
+        if (file.size > 5 * 1024 * 1024) { alert('File size must be under 5MB.'); return; }
+        document.getElementById('rpDropIdle').style.display = 'none';
+        document.getElementById('rpDropSelected').style.display = 'flex';
+        document.getElementById('rpSelName').textContent = file.name;
+        document.getElementById('rpSelSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+        document.getElementById('rpUploadBtn').disabled = false;
+        // Sync to real input
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        document.getElementById('resumeFile').files = dt.files;
+    }
+
+    function clearRpFile() {
+        document.getElementById('resumeFile').value = '';
+        document.getElementById('rpDropIdle').style.display = 'flex';
+        document.getElementById('rpDropSelected').style.display = 'none';
+        document.getElementById('rpUploadBtn').disabled = true;
+    }
+
+    function toggleReplaceArea() {
+        const card = document.getElementById('uploadCard');
+        const curr = document.getElementById('currentResumeCard');
+        const isHidden = card.style.display === 'none';
+        card.style.display = isHidden ? 'block' : 'none';
+        if (curr) curr.style.display = isHidden ? 'none' : 'block';
+        if (!isHidden) clearRpFile();
+    }
+
+    function togglePreview() {
+        const txt = document.getElementById('resumePreviewText');
+        const chevron = document.getElementById('previewChevron');
+        const open = txt.style.display === 'block';
+        txt.style.display = open ? 'none' : 'block';
+        chevron.className = open ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+    }
+</script>
+{% endblock %}

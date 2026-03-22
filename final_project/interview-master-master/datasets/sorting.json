@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Implement Merge Sort",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Implement Quick Sort",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Find the Kth largest element in an array",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Sort an array of 0s, 1s, and 2s (Dutch National Flag problem)",
+        "difficulty": "Medium",
+        "category": "Technical"
+    }
+]

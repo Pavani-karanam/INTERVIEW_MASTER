@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Inorder, Preorder, and Postorder Traversals",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Find the maximum depth of a binary tree",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Lowest Common Ancestor (LCA) of a binary tree",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Serialize and Deserialize a Binary Tree",
+        "difficulty": "Hard",
+        "category": "Technical"
+    }
+]

@@ -1,0 +1,727 @@
+{% extends 'base.html' %}
+{% block title %}Interview Room - Interview Master{% endblock %}
+
+{% block body %}
+<nav class="navbar glass-nav">
+    <div class="nav-container">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">
+            <i class="fas fa-bolt"></i>
+            <span>Interview<strong>Master</strong></span>
+        </a>
+        <div class="nav-links">
+            <div class="interview-meta">
+                <span class="meta-badge"><i class="fas fa-briefcase"></i> {{ interview.job_role }}</span>
+                <span class="meta-badge"><i class="fas fa-building"></i> {{ interview.company }}</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="interview-main">
+    <div class="container">
+        <div class="interview-layout">
+            <!-- Progress Sidebar -->
+            <aside class="interview-sidebar glass-card" id="interviewSidebar">
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-list-check"></i> Questions</h3>
+                    <div class="progress-ring-wrap">
+                        <svg class="progress-ring" width="60" height="60">
+                            <circle class="progress-ring-bg" cx="30" cy="30" r="26" />
+                            <circle class="progress-ring-fill" id="progressRing" cx="30" cy="30" r="26" />
+                        </svg>
+                        <span class="progress-ring-text" id="progressText">0/{{ questions|length }}</span>
+                    </div>
+                </div>
+                <div class="question-nav" id="questionNav">
+                    {% for q in questions %}
+                    <button class="q-nav-btn {% if loop.first %}active{% endif %}" id="qNavBtn{{ loop.index0 }}"
+                        data-index="{{ loop.index0 }}" onclick="goToQuestion({{ loop.index0 }})">
+                        <span class="q-nav-num">{{ loop.index }}</span>
+                        <span class="q-nav-cat">{{ q.category[:4] }}</span>
+                        <span class="q-nav-status"><i class="fas fa-circle"></i></span>
+                    </button>
+                    {% endfor %}
+                </div>
+                <div class="sidebar-timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="timerDisplay">00:00</span>
+                </div>
+            </aside>
+
+            <!-- Question Area -->
+            <div class="interview-content">
+                <div class="question-area glass-card" id="questionArea">
+                    <div class="question-header">
+                        <div class="question-info">
+                            <span class="question-number" id="questionNumber">Question 1 of {{ questions|length
+                                }}</span>
+                            <div class="question-tags">
+                                <span class="tag tag-category" id="questionCategory"></span>
+                                <span class="tag tag-difficulty" id="questionDifficulty"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="question-body">
+                        <p class="question-text" id="questionText"></p>
+                    </div>
+                    <!-- Voice Controls -->
+                    <div class="voice-controls">
+                        <button class="btn btn-voice btn-listen" id="listenBtn" onclick="speakQuestion()"
+                            title="AI reads the question aloud">
+                            <i class="fas fa-volume-up"></i> <span>Listen to Question</span>
+                        </button>
+                        <button class="btn btn-voice btn-speak" id="speakBtn" onclick="toggleSpeechRecognition()"
+                            title="Speak your answer">
+                            <i class="fas fa-microphone"></i> <span id="speakBtnText">Speak Answer</span>
+                        </button>
+                        <button class="btn btn-voice btn-play" id="playAnswerBtn" onclick="playAnswer()"
+                            title="Listen to your current answer">
+                            <i class="fas fa-play"></i> <span>Play Answer</span>
+                        </button>
+                        <span class="voice-status" id="voiceStatus"></span>
+                    </div>
+                    <div class="answer-area">
+                        <label for="answerInput" class="answer-label">
+                            <i class="fas fa-pen"></i> Your Answer <span class="answer-hint">(type or use voice)</span>
+                        </label>
+                        <textarea id="answerInput"
+                            placeholder="Type your answer here or click 'Speak Answer' to use voice input... Be detailed and specific."
+                            rows="8"></textarea>
+                        <div class="answer-footer">
+                            <span class="char-count" id="charCount">0 characters</span>
+                        </div>
+                    </div>
+                    <div class="question-actions">
+                        <button class="btn btn-glass" id="prevBtn" onclick="prevQuestion()" disabled>
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button class="btn btn-primary" id="submitAnswerBtn" onclick="submitCurrentAnswer()">
+                            <i class="fas fa-check"></i> Submit Answer
+                        </button>
+                        <button class="btn btn-glass" id="nextBtn" onclick="nextQuestion()">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feedback Panel (shown after submission) -->
+                <div class="feedback-panel glass-card" id="feedbackPanel" style="display:none;">
+                    <div class="feedback-header">
+                        <h3><i class="fas fa-robot"></i> AI Feedback</h3>
+                        <div class="feedback-score-wrap">
+                            <div class="feedback-score-circle" id="feedbackScoreCircle">
+                                <span id="feedbackScore">0</span>/10
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feedback-body">
+                        <p id="feedbackText"></p>
+                        <div class="feedback-details">
+                            <div class="feedback-col">
+                                <h4><i class="fas fa-check-circle"></i> Strengths</h4>
+                                <ul id="feedbackStrengths"></ul>
+                            </div>
+                            <div class="feedback-col">
+                                <h4><i class="fas fa-exclamation-circle"></i> Improvements</h4>
+                                <ul id="feedbackImprovements"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Finish Button -->
+                <div class="finish-area" id="finishArea" style="display:none;">
+                    <button class="btn btn-primary btn-lg" id="finishBtn" onclick="finishInterview()">
+                        <i class="fas fa-flag-checkered"></i>
+                        <span>Finish Interview & Get Results</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none;">
+    <div class="loading-card glass-card">
+        <div class="loading-spinner"></div>
+        <h3 id="loadingText">Evaluating your answer...</h3>
+        <p>Our AI is analyzing your response</p>
+    </div>
+</div>
+
+<!-- ===== LIVE CAMERA MONITOR ===== -->
+<div class="camera-monitor" id="cameraMonitor">
+    <div class="camera-monitor-header">
+        <span class="cam-title"><i class="fas fa-video"></i> You</span>
+        <div class="cam-header-controls">
+            <span class="cam-rec-dot" id="camRecDot"></span>
+            <button class="cam-ctrl-btn" id="camMinimizeBtn" onclick="toggleMinimizeCam()" title="Minimize">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="camera-body" id="cameraBody">
+        <video id="cameraFeed" autoplay muted playsinline></video>
+        <div class="cam-no-video" id="camNoVideo" style="display:none;">
+            <i class="fas fa-user-circle"></i>
+            <span>Camera Off</span>
+        </div>
+        <div class="cam-overlay-info">
+            <span class="cam-status-badge" id="camStatusBadge">
+                <i class="fas fa-circle cam-live-dot"></i> LIVE
+            </span>
+        </div>
+    </div>
+    <div class="camera-controls" id="cameraControls">
+        <button class="cam-btn cam-btn-mic" id="micBtn" onclick="toggleMic()" title="Toggle Microphone">
+            <i class="fas fa-microphone" id="micIcon"></i>
+        </button>
+        <button class="cam-btn cam-btn-cam" id="camBtn" onclick="toggleCamera()" title="Toggle Camera">
+            <i class="fas fa-video" id="camIcon"></i>
+        </button>
+        <div class="cam-timer">
+            <i class="fas fa-clock"></i>
+            <span id="camTimer">00:00</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Interview Data
+    const questions = {{ questions | tojson }};
+    const interviewId = {{ interview.id }};
+    const jobRole = "{{ interview.job_role }}";
+    const company = "{{ interview.company }}";
+    const totalQuestions = questions.length;
+
+    let currentIndex = 0;
+    let answers = new Array(totalQuestions).fill('');
+    let submitted = new Array(totalQuestions).fill(false);
+    let feedbacks = new Array(totalQuestions).fill(null);
+    let timerSeconds = 0;
+    let timerInterval;
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+        loadQuestion(0);
+        startTimer();
+        initCamera();
+        document.getElementById('answerInput').addEventListener('input', function () {
+            document.getElementById('charCount').textContent = this.value.length + ' characters';
+            answers[currentIndex] = this.value;
+        });
+    });
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timerSeconds++;
+            const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+            const s = String(timerSeconds % 60).padStart(2, '0');
+            document.getElementById('timerDisplay').textContent = m + ':' + s;
+        }, 1000);
+    }
+
+    function loadQuestion(index) {
+        currentIndex = index;
+        const q = questions[index];
+
+        document.getElementById('questionNumber').textContent = `Question ${index + 1} of ${totalQuestions}`;
+        document.getElementById('questionText').textContent = q.question_text;
+        document.getElementById('questionCategory').textContent = q.category;
+        document.getElementById('questionDifficulty').textContent = q.difficulty;
+
+        // Set difficulty color
+        const diffEl = document.getElementById('questionDifficulty');
+        diffEl.className = 'tag tag-difficulty tag-' + q.difficulty.toLowerCase();
+
+        // Load saved answer
+        document.getElementById('answerInput').value = answers[index] || '';
+        document.getElementById('charCount').textContent = (answers[index] || '').length + ' characters';
+
+        // Button states
+        document.getElementById('prevBtn').disabled = index === 0;
+        document.getElementById('nextBtn').style.display = index === totalQuestions - 1 ? 'none' : 'inline-flex';
+
+        // Show/hide feedback
+        if (submitted[index] && feedbacks[index]) {
+            showFeedback(feedbacks[index]);
+            document.getElementById('submitAnswerBtn').disabled = true;
+            document.getElementById('submitAnswerBtn').innerHTML = '<i class="fas fa-check-double"></i> Submitted';
+            document.getElementById('answerInput').disabled = true;
+        } else {
+            document.getElementById('feedbackPanel').style.display = 'none';
+            document.getElementById('submitAnswerBtn').disabled = false;
+            document.getElementById('submitAnswerBtn').innerHTML = '<i class="fas fa-check"></i> Submit Answer';
+            document.getElementById('answerInput').disabled = false;
+        }
+
+        // Update nav buttons
+        document.querySelectorAll('.q-nav-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', i === index);
+        });
+
+        // Show finish button if all answered
+        const allDone = submitted.every(s => s);
+        document.getElementById('finishArea').style.display = allDone ? 'flex' : 'none';
+    }
+
+    function goToQuestion(index) {
+        answers[currentIndex] = document.getElementById('answerInput').value;
+        loadQuestion(index);
+    }
+
+    function nextQuestion() {
+        answers[currentIndex] = document.getElementById('answerInput').value;
+        if (currentIndex < totalQuestions - 1) loadQuestion(currentIndex + 1);
+    }
+
+    function prevQuestion() {
+        answers[currentIndex] = document.getElementById('answerInput').value;
+        if (currentIndex > 0) loadQuestion(currentIndex - 1);
+    }
+
+    async function submitCurrentAnswer() {
+        const answer = document.getElementById('answerInput').value.trim();
+        if (!answer) {
+            alert('Please write an answer before submitting.');
+            return;
+        }
+
+        answers[currentIndex] = answer;
+        document.getElementById('loadingOverlay').style.display = 'flex';
+
+        try {
+            const response = await fetch('/api/submit-answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question_id: questions[currentIndex].id,
+                    answer: answer,
+                    question_text: questions[currentIndex].question_text,
+                    job_role: jobRole,
+                    company: company
+                })
+            });
+
+            const data = await response.json();
+            feedbacks[currentIndex] = data;
+            submitted[currentIndex] = true;
+
+            // Update nav button
+            const navBtn = document.getElementById('qNavBtn' + currentIndex);
+            navBtn.classList.add('answered');
+            navBtn.querySelector('.q-nav-status i').className = 'fas fa-check-circle';
+
+            // Update progress
+            const answeredCount = submitted.filter(s => s).length;
+            document.getElementById('progressText').textContent = answeredCount + '/' + totalQuestions;
+            const ring = document.getElementById('progressRing');
+            const circumference = 2 * Math.PI * 26;
+            ring.style.strokeDasharray = circumference;
+            ring.style.strokeDashoffset = circumference - (answeredCount / totalQuestions) * circumference;
+
+            showFeedback(data);
+
+            document.getElementById('submitAnswerBtn').disabled = true;
+            document.getElementById('submitAnswerBtn').innerHTML = '<i class="fas fa-check-double"></i> Submitted';
+            document.getElementById('answerInput').disabled = true;
+
+            // Show finish if all done
+            const allDone = submitted.every(s => s);
+            document.getElementById('finishArea').style.display = allDone ? 'flex' : 'none';
+
+        } catch (err) {
+            console.error(err);
+            alert('Error submitting answer. Please try again.');
+        }
+
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    function showFeedback(data) {
+        document.getElementById('feedbackPanel').style.display = 'block';
+        document.getElementById('feedbackScore').textContent = data.score;
+        document.getElementById('feedbackText').textContent = data.feedback;
+
+        const scoreCircle = document.getElementById('feedbackScoreCircle');
+        if (data.score >= 7) scoreCircle.className = 'feedback-score-circle score-high';
+        else if (data.score >= 4) scoreCircle.className = 'feedback-score-circle score-mid';
+        else scoreCircle.className = 'feedback-score-circle score-low';
+
+        const strengthsList = document.getElementById('feedbackStrengths');
+        strengthsList.innerHTML = '';
+        (data.strengths || []).forEach(s => {
+            const li = document.createElement('li');
+            li.textContent = s;
+            strengthsList.appendChild(li);
+        });
+
+        const improvList = document.getElementById('feedbackImprovements');
+        improvList.innerHTML = '';
+        (data.improvements || []).forEach(s => {
+            const li = document.createElement('li');
+            li.textContent = s;
+            improvList.appendChild(li);
+        });
+    }
+
+    // ========== VOICE FEATURES ==========
+    let isRecording = false;
+    let recognition = null;
+    const synth = window.speechSynthesis;
+
+    // ========== AUDIO RECORDING (for Play Answer) ==========
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let audioRecordings = new Array(totalQuestions).fill(null); // stores Blob per question
+    let isPlayingAnswer = false;
+    let currentAudio = null;
+
+    // Text-to-Speech: AI reads the question aloud
+    function speakQuestion() {
+        if (!synth) { alert('Text-to-speech is not supported in your browser.'); return; }
+        synth.cancel();
+        const text = questions[currentIndex].question_text;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        utterance.lang = 'en-US';
+
+        const btn = document.getElementById('listenBtn');
+        btn.classList.add('active-voice');
+        btn.innerHTML = '<i class="fas fa-volume-up fa-beat"></i> <span>Speaking...</span>';
+
+        utterance.onend = () => {
+            btn.classList.remove('active-voice');
+            btn.innerHTML = '<i class="fas fa-volume-up"></i> <span>Listen to Question</span>';
+        };
+
+        synth.speak(utterance);
+    }
+
+    // Play back the user's actual recorded voice AND transcribe it into the answer box
+    async function playAnswer() {
+        const btn = document.getElementById('playAnswerBtn');
+
+        // If currently playing, stop it
+        if (isPlayingAnswer && currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            isPlayingAnswer = false;
+            btn.classList.remove('active-voice');
+            btn.innerHTML = '<i class="fas fa-play"></i> <span>Play Answer</span>';
+            return;
+        }
+
+        const recording = audioRecordings[currentIndex];
+        if (!recording) {
+            alert('No voice recording found for this question. Click "Speak Answer" first to record your voice.');
+            return;
+        }
+
+        // 1. Play the audio back so the user can hear themselves
+        const audioUrl = URL.createObjectURL(recording);
+        currentAudio = new Audio(audioUrl);
+        isPlayingAnswer = true;
+
+        btn.classList.add('active-voice');
+        btn.innerHTML = '<i class="fas fa-stop fa-beat"></i> <span>Playing & Transcribing...</span>';
+
+        currentAudio.onended = () => {
+            isPlayingAnswer = false;
+            if (!isTranscribing) {
+                btn.classList.remove('active-voice');
+                btn.innerHTML = '<i class="fas fa-play"></i> <span>Play Answer</span>';
+            }
+            URL.revokeObjectURL(audioUrl);
+        };
+
+        currentAudio.play();
+
+        // 2. Send audio to server for transcription and put text in the answer box
+        let isTranscribing = true;
+        try {
+            const formData = new FormData();
+            formData.append('audio', recording, 'recording.webm');
+
+            const response = await fetch('/api/transcribe-audio', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.text) {
+                const answerInput = document.getElementById('answerInput');
+                answerInput.value = data.text;
+                answerInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        } catch (err) {
+            console.error('Transcription failed:', err);
+        } finally {
+            isTranscribing = false;
+            if (!isPlayingAnswer) {
+                btn.classList.remove('active-voice');
+                btn.innerHTML = '<i class="fas fa-play"></i> <span>Play Answer</span>';
+            }
+        }
+    }
+
+    // let recognition;
+    // let isRecording = false;
+
+    function toggleSpeechRecognition() {
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            alert("Speech recognition not supported. Use Chrome.");
+            return;
+        }
+
+        const btn = document.getElementById("speakBtn");
+        const voiceStatus = document.getElementById("voiceStatus");
+        const answerInput = document.getElementById("answerInput");
+
+        if (isRecording) {
+            recognition.stop();
+            return;
+        }
+
+        recognition = new SpeechRecognition();
+
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "en-US";
+
+        recognition.onstart = () => {
+            isRecording = true;
+
+            btn.classList.add("recording");
+            btn.innerHTML = "Stop Listening";
+
+            voiceStatus.textContent = "🎤 Listening...";
+        };
+        let finalTranscript = "";
+
+        recognition.onresult = (event) => {
+
+            let interimTranscript = "";
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+
+                const transcript = event.results[i][0].transcript;
+
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + " ";
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+
+            answerInput.value = finalTranscript + interimTranscript;
+        };
+        recognition.onend = () => {
+            isRecording = false;
+
+            btn.classList.remove("recording");
+            btn.innerHTML = "Speak Answer";
+
+            voiceStatus.textContent = "";
+        };
+
+        recognition.start();
+    };
+
+    function stopRecording() {
+        if (!isRecording) return;
+        isRecording = false;
+
+        // Stop MediaRecorder to trigger its onstop event and save/transcribe the clean audio
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            try {
+                mediaRecorder.stop();
+            } catch (e) {
+                console.error("Error stopping MediaRecorder:", e);
+            }
+        }
+
+        const btn = document.getElementById('speakBtn');
+        btn.classList.remove('recording');
+        btn.innerHTML = '<i class="fas fa-microphone"></i> <span>Speak Answer</span>';
+    }
+
+    async function finishInterview() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        document.getElementById('loadingText').textContent = 'Generating your performance report...';
+
+        try {
+            const response = await fetch('/api/finish-interview', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ interview_id: interviewId })
+            });
+
+            const data = await response.json();
+            clearInterval(timerInterval);
+            stopCameraStream();
+
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error finishing interview. Please try again.');
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+    }
+
+    // ========== CAMERA MONITOR ==========
+    let cameraStream = null;
+    let camMicEnabled = true;
+    let camVideoEnabled = true;
+    let camMinimized = false;
+    let camTimerSeconds = 0;
+    let camTimerInterval = null;
+
+    async function initCamera() {
+        try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            const video = document.getElementById('cameraFeed');
+            video.srcObject = cameraStream;
+            document.getElementById('camNoVideo').style.display = 'none';
+            video.style.display = 'block';
+            document.getElementById('camRecDot').classList.add('active');
+
+            // Start camera timer
+            camTimerInterval = setInterval(() => {
+                camTimerSeconds++;
+                const m = String(Math.floor(camTimerSeconds / 60)).padStart(2, '0');
+                const s = String(camTimerSeconds % 60).padStart(2, '0');
+                document.getElementById('camTimer').textContent = m + ':' + s;
+            }, 1000);
+
+        } catch (err) {
+            console.warn('Camera not available:', err);
+            document.getElementById('cameraFeed').style.display = 'none';
+            document.getElementById('camNoVideo').style.display = 'flex';
+            document.getElementById('camStatusBadge').innerHTML = '<i class="fas fa-video-slash"></i> No Camera';
+            document.getElementById('camStatusBadge').style.background = 'rgba(239,68,68,0.2)';
+        }
+    }
+
+    function toggleCamera() {
+        if (!cameraStream) return;
+        camVideoEnabled = !camVideoEnabled;
+        cameraStream.getVideoTracks().forEach(t => t.enabled = camVideoEnabled);
+        const icon = document.getElementById('camIcon');
+        const btn = document.getElementById('camBtn');
+        const feed = document.getElementById('cameraFeed');
+        const noVid = document.getElementById('camNoVideo');
+        if (camVideoEnabled) {
+            icon.className = 'fas fa-video';
+            btn.classList.remove('cam-btn-off');
+            feed.style.display = 'block';
+            noVid.style.display = 'none';
+        } else {
+            icon.className = 'fas fa-video-slash';
+            btn.classList.add('cam-btn-off');
+            feed.style.display = 'none';
+            noVid.style.display = 'flex';
+        }
+    }
+
+    function toggleMic() {
+        if (!cameraStream) return;
+        camMicEnabled = !camMicEnabled;
+        cameraStream.getAudioTracks().forEach(t => t.enabled = camMicEnabled);
+        const icon = document.getElementById('micIcon');
+        const btn = document.getElementById('micBtn');
+        if (camMicEnabled) {
+            icon.className = 'fas fa-microphone';
+            btn.classList.remove('cam-btn-off');
+        } else {
+            icon.className = 'fas fa-microphone-slash';
+            btn.classList.add('cam-btn-off');
+        }
+    }
+
+    function toggleMinimizeCam() {
+        camMinimized = !camMinimized;
+        const body = document.getElementById('cameraBody');
+        const ctrls = document.getElementById('cameraControls');
+        const btn = document.getElementById('camMinimizeBtn');
+        const monitor = document.getElementById('cameraMonitor');
+        if (camMinimized) {
+            body.style.display = 'none';
+            ctrls.style.display = 'none';
+            monitor.classList.add('minimized');
+            btn.innerHTML = '<i class="fas fa-expand"></i>';
+        } else {
+            body.style.display = 'block';
+            ctrls.style.display = 'flex';
+            monitor.classList.remove('minimized');
+            btn.innerHTML = '<i class="fas fa-minus"></i>';
+        }
+    }
+
+    function stopCameraStream() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(t => t.stop());
+        }
+        clearInterval(camTimerInterval);
+    }
+
+    // ========== MAKE CAMERA WIDGET DRAGGABLE ==========
+    const cameraMonitor = document.getElementById('cameraMonitor');
+    const cameraHeader = document.querySelector('.camera-monitor-header');
+
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    cameraHeader.style.cursor = 'grab';
+
+    cameraHeader.addEventListener('mousedown', dragStart);
+    document.addEventListener('mouseup', dragEnd);
+    document.addEventListener('mousemove', drag);
+
+    function dragStart(e) {
+        // Prevent dragging if clicking on the minimize button
+        if (e.target.closest('#camMinimizeBtn')) return;
+
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+
+        if (e.target === cameraHeader || cameraHeader.contains(e.target)) {
+            isDragging = true;
+            cameraHeader.style.cursor = 'grabbing';
+            // ensure camera overlay is above other elements when dragging
+            cameraMonitor.style.zIndex = '10000';
+        }
+    }
+
+    function dragEnd(e) {
+        initialX = currentX;
+        initialY = currentY;
+        isDragging = false;
+        cameraHeader.style.cursor = 'grab';
+    }
+
+    function drag(e) {
+        if (isDragging) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            xOffset = currentX;
+            yOffset = currentY;
+            cameraMonitor.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+        }
+    }
+
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Interview History - Interview Master{% endblock %}
+
+{% block body %}
+<nav class="navbar glass-nav">
+    <div class="nav-container">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">
+            <i class="fas fa-bolt"></i>
+            <span>Interview<strong>Master</strong></span>
+        </a>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="{{ url_for('setup') }}" class="nav-btn nav-btn-primary" id="newInterviewHistBtn"><i
+                    class="fas fa-plus"></i> New Interview</a>
+            <a href="{{ url_for('logout') }}" class="nav-btn nav-btn-outline"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="history-main">
+    <div class="container">
+        <div class="history-header animate-fade-in">
+            <h1><i class="fas fa-history"></i> Interview <span class="gradient-text">History</span></h1>
+            <p>Review all your past mock interviews and track your progress over time.</p>
+        </div>
+
+        {% if interviews|length > 0 %}
+        <div class="history-grid animate-fade-in">
+            {% for interview in interviews %}
+            <div class="history-card glass-card" id="historyCard{{ interview.id }}">
+                <div class="history-card-top">
+                    <div
+                        class="history-card-score {% if interview.score >= 7 %}score-high{% elif interview.score >= 4 %}score-mid{% else %}score-low{% endif %}">
+                        {{ interview.score }}<span>/10</span>
+                    </div>
+                    <span class="rating-badge rating-{{ interview.rating | lower | replace(' ', '-') }}">
+                        {{ interview.rating or 'Pending' }}
+                    </span>
+                </div>
+                <div class="history-card-body">
+                    <h3>{{ interview.job_role }}</h3>
+                    <div class="history-meta">
+                        <span><i class="fas fa-building"></i> {{ interview.company }}</span>
+                        <span><i class="fas fa-layer-group"></i> {{ interview.interview_type | capitalize }}</span>
+                        <span><i class="fas fa-list"></i> {{ interview.total_questions }} Qs</span>
+                    </div>
+                    <div class="history-date">
+                        <i class="fas fa-calendar-alt"></i> {{ interview.created_at[:10] }}
+                    </div>
+                </div>
+                <div class="history-card-footer">
+                    <a href="{{ url_for('results', interview_id=interview.id) }}"
+                        class="btn btn-primary btn-sm btn-block">
+                        <i class="fas fa-chart-bar"></i> View Results
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state glass-card animate-fade-in">
+            <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+            <h3>No interview history</h3>
+            <p>Complete your first mock interview to see your history here!</p>
+            <a href="{{ url_for('setup') }}" class="btn btn-primary" id="emptyHistStartBtn">
+                <i class="fas fa-play"></i> Start First Interview
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}

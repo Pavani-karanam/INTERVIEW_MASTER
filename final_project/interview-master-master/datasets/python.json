@@ -1,0 +1,22 @@
+[
+    {
+        "question": "What are decorators and how do you write a custom one?",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "List comprehension vs map/filter functions",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Explain Global Interpreter Lock (GIL) and its impact on threading",
+        "difficulty": "Hard",
+        "category": "Technical"
+    },
+    {
+        "question": "Difference between *args and **kwargs",
+        "difficulty": "Easy",
+        "category": "Technical"
+    }
+]

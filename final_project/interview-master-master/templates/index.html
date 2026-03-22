@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% block title %}Interview Master - AI Mock Interview Platform{% endblock %}
+
+{% block body %}
+<!-- Navigation -->
+<nav class="navbar glass-nav">
+    <div class="nav-container">
+        <a href="{{ url_for('index') }}" class="nav-logo">
+            <i class="fas fa-bolt"></i>
+            <span>Interview<strong>Master</strong></span>
+        </a>
+        <div class="nav-links">
+            <a href="{{ url_for('login') }}" class="nav-btn nav-btn-outline" id="loginBtn">Login</a>
+            <a href="{{ url_for('register') }}" class="nav-btn nav-btn-primary" id="registerBtn">Get Started</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-bg">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-orb hero-orb-3"></div>
+        <div class="hero-grid"></div>
+    </div>
+    <div class="hero-content hero-two-col">
+        <!-- Left: Text -->
+        <div class="hero-text-col animate-fade-in">
+            <div class="hero-badge">
+                <i class="fas fa-sparkles"></i>
+                <span>Powered by AI</span>
+            </div>
+            <h1 class="hero-title">
+                Master Every Interview<br>
+                <span class="gradient-text">With AI Precision</span>
+            </h1>
+            <p class="hero-subtitle">
+                Practice with AI-generated questions tailored to your role, company, and resume.
+                Get instant feedback, performance ratings, and personalized improvement plans.
+            </p>
+            <div class="hero-actions">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg" id="heroStartBtn">
+                    <span>Start Practicing</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="#features" class="btn btn-glass btn-lg" id="heroLearnBtn">
+                    <i class="fas fa-play-circle"></i>
+                    <span>Learn More</span>
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="10000">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Questions</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="500">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Companies</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="50">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Roles</span>
+                </div>
+            </div>
+        </div>
+        <!-- Right: 3D AI Interviewer -->
+        <div class="hero-ai-col animate-fade-in">
+            <div class="hero-ai-wrap">
+                <div class="hero-ai-glow"></div>
+                <div class="hero-ai-card">
+                    <div class="ai-interviewer-ring"></div>
+                    <img src="{{ url_for('static', filename='images/ai_interviewer.png') }}" alt="AI Interviewer"
+                        class="hero-ai-img">
+                    <div class="ai-interviewer-badge">
+                        <span class="ai-badge-dot"></span>
+                        AI Interviewer Live
+                    </div>
+                </div>
+                <!-- Floating info chips -->
+                <div class="hero-ai-chip chip-top">
+                    <i class="fas fa-microphone"></i> Voice Ready
+                </div>
+                <div class="hero-ai-chip chip-bottom">
+                    <i class="fas fa-brain"></i> Gemini AI
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">Features</span>
+            <h2 class="section-title">Everything You Need to <span class="gradient-text">Ace Your Interview</span></h2>
+            <p class="section-subtitle">Our AI-powered platform provides comprehensive interview preparation tools</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card" id="featureAI">
+                <div class="feature-icon-wrap">
+                    <div class="feature-icon gradient-bg-1">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                </div>
+                <h3>AI Question Generation</h3>
+                <p>Dynamic questions generated based on your job role, target company, and resume using advanced AI
+                    models.</p>
+            </div>
+            <div class="feature-card" id="featureResume">
+                <div class="feature-icon-wrap">
+                    <div class="feature-icon gradient-bg-2">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                </div>
+                <h3>Resume Analysis</h3>
+                <p>Upload your resume and get personalized questions that target your specific skills and experience.
+                </p>
+            </div>
+            <div class="feature-card" id="featureFeedback">
+                <div class="feature-icon-wrap">
+                    <div class="feature-icon gradient-bg-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <h3>Instant Feedback</h3>
+                <p>Receive real-time evaluation of your answers with detailed scoring, strengths, and improvement areas.
+                </p>
+            </div>
+            <div class="feature-card" id="featureTypes">
+                <div class="feature-icon-wrap">
+                    <div class="feature-icon gradient-bg-4">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                </div>
+                <h3>Technical & HR</h3>
+                <p>Practice both technical coding questions and behavioral HR questions in a realistic mock setting.</p>
+            </div>
+            <div class="feature-card" id="featureReport">
+                <div class="feature-icon-wrap">
+                    <div class="feature-icon gradient-bg-5">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                </div>
+                <h3>Performance Reports</h3>
+                <p>Get comprehensive performance reports with ratings, strengths, weaknesses, and action items.</p>
+            </div>
+            <div class="feature-card" id="featureHistory">
+                <div class="feature-icon-wrap">
+                    <div class="feature-icon gradient-bg-6">
+                        <i class="fas fa-history"></i>
+                    </div>
+                </div>
+                <h3>Track Progress</h3>
+                <p>Review past interviews, track your improvement over time, and identify patterns in your performance.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">Process</span>
+            <h2 class="section-title">How It <span class="gradient-text">Works</span></h2>
+        </div>
+
+        <!-- AI Interviewer Visual Centre -->
+        <div class="how-ai-center">
+            <div class="how-ai-wrap">
+                <div class="ai-interviewer-glow"></div>
+                <div class="ai-interviewer-card how-ai-card">
+                    <div class="ai-interviewer-ring"></div>
+                    <img src="{{ url_for('static', filename='images/ai_interviewer.png') }}" alt="AI Interviewer"
+                        class="ai-interviewer-img how-ai-img">
+                    <div class="ai-interviewer-badge">
+                        <span class="ai-badge-dot"></span>
+                        AI Interviewer
+                    </div>
+                </div>
+            </div>
+            <div class="how-ai-caption">
+                <p>Your personal AI interviewer guides you through every step of the mock interview process</p>
+            </div>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                <h3>Create Account</h3>
+                <p>Sign up and set up your profile to get started with your interview prep journey.</p>
+            </div>
+            <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <div class="step-icon"><i class="fas fa-cogs"></i></div>
+                <h3>Setup Interview</h3>
+                <p>Select your target role, company, upload resume, and choose interview type.</p>
+            </div>
+            <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <div class="step-icon"><i class="fas fa-robot"></i></div>
+                <h3>AI Interviews You</h3>
+                <p>Answer AI-generated questions via voice or text in a timed, realistic interview environment.</p>
+            </div>
+            <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+            <div class="step-card">
+                <div class="step-number">04</div>
+                <div class="step-icon"><i class="fas fa-star"></i></div>
+                <h3>Get Results</h3>
+                <p>Receive detailed feedback, scores, and personalized improvement suggestions.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="nav-logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>Interview<strong>Master</strong></span>
+                </div>
+                <p>AI-powered mock interview platform for career success.</p>
+            </div>
+            <div class="footer-copy">
+                <p>&copy; 2026 Interview Master. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}

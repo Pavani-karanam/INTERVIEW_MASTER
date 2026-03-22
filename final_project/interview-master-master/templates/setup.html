@@ -1,0 +1,1517 @@
+{% extends 'base.html' %}
+{% block title %}Setup Interview - Interview Master{% endblock %}
+
+{% block head %}
+<style>
+    /* ── Setup Page Overrides ── */
+    .setup-main {
+        padding: 80px 0 60px;
+        background: linear-gradient(160deg, #eef2ff 0%, #f8f9fc 50%, #f0fdf9 100%);
+        min-height: 100vh;
+    }
+
+    /* ── Hero Banner ── */
+    .setup-hero {
+        background: linear-gradient(135deg, #5b4fcf 0%, #7c6fff 40%, #a855f7 70%, #ec4899 100%);
+        border-radius: 24px;
+        padding: 48px 40px;
+        margin-bottom: 36px;
+        position: relative;
+        overflow: hidden;
+        color: #fff;
+        text-align: center;
+    }
+
+    .setup-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .setup-hero-orb1 {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.07);
+        top: -80px;
+        right: -60px;
+        pointer-events: none;
+    }
+
+    .setup-hero-orb2 {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        bottom: -60px;
+        left: -40px;
+        pointer-events: none;
+    }
+
+    .setup-hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .setup-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 6px 16px;
+        border-radius: 30px;
+        font-size: .8rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        letter-spacing: .5px;
+    }
+
+    .setup-hero h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        line-height: 1.2;
+    }
+
+    .setup-hero p {
+        font-size: 1rem;
+        opacity: .85;
+        margin-bottom: 32px;
+    }
+
+    /* ── Plan Cards ── */
+    .plan-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .plan-card {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        border-radius: 16px;
+        padding: 20px 16px;
+        cursor: pointer;
+        transition: all .3s ease;
+        position: relative;
+        text-align: center;
+    }
+
+    .plan-card:hover,
+    .plan-card.active {
+        background: rgba(255, 255, 255, 0.28);
+        border-color: rgba(255, 255, 255, 0.6);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .plan-card.active .plan-check {
+        display: flex;
+    }
+
+    .plan-check {
+        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 22px;
+        height: 22px;
+        background: #fff;
+        border-radius: 50%;
+        color: #6c63ff;
+        font-size: .7rem;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    .plan-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+    }
+
+    .plan-name {
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .plan-desc {
+        font-size: .75rem;
+        opacity: .8;
+        margin-top: 4px;
+    }
+
+    .plan-price {
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-top: 8px;
+        color: #fff;
+    }
+
+    .plan-price span {
+        font-size: .75rem;
+        font-weight: 400;
+        opacity: .8;
+    }
+
+    .plan-badge-pro {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #f39c12;
+        color: #fff;
+        font-size: .65rem;
+        font-weight: 700;
+        padding: 2px 10px;
+        border-radius: 10px;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+
+    /* ── Setup Grid Layout ── */
+    .setup-grid {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 28px;
+        align-items: start;
+    }
+
+    .setup-left {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .setup-right {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Panels */
+    .setup-panel {
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .panel-title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #1a1a2e;
+    }
+
+    .panel-title i {
+        color: #6c63ff;
+    }
+
+    /* ── Search Bar ── */
+    .search-bar-wrap {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .search-bar {
+        width: 100%;
+        background: #f4f5f9;
+        border: 1.5px solid rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        padding: 13px 16px 13px 44px;
+        font-size: .92rem;
+        font-family: 'Inter', sans-serif;
+        color: #1a1a2e;
+        outline: none;
+        transition: all .25s;
+    }
+
+    .search-bar:focus {
+        border-color: #6c63ff;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+    }
+
+    .search-bar-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8888a0;
+        font-size: .95rem;
+    }
+
+    /* ── Topics Grid ── */
+    .topics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .topic-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8f9fc;
+        border: 1.5px solid rgba(0, 0, 0, 0.07);
+        border-radius: 10px;
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: all .25s;
+        font-size: .82rem;
+        font-weight: 500;
+        color: #555570;
+        position: relative;
+        user-select: none;
+    }
+
+    .topic-chip:hover {
+        border-color: #6c63ff;
+        background: rgba(108, 99, 255, 0.06);
+        color: #6c63ff;
+        transform: translateY(-2px);
+    }
+
+    .topic-chip.selected {
+        border-color: #6c63ff;
+        background: rgba(108, 99, 255, 0.1);
+        color: #6c63ff;
+        font-weight: 600;
+    }
+
+    .topic-chip .chip-icon {
+        font-size: 1rem;
+    }
+
+    .topic-chip .chip-count {
+        margin-left: auto;
+        font-size: .7rem;
+        color: #8888a0;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        padding: 1px 7px;
+    }
+
+    /* ── Difficulty Filter ── */
+    .difficulty-row {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .diff-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+    }
+
+    .diff-label {
+        min-width: 70px;
+        font-size: .82rem;
+        font-weight: 600;
+    }
+
+    .diff-bar-wrap {
+        flex: 1;
+        height: 7px;
+        background: rgba(0, 0, 0, 0.07);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .diff-bar {
+        height: 100%;
+        border-radius: 4px;
+        transition: width .4s ease;
+    }
+
+    .diff-easy .diff-bar {
+        background: linear-gradient(90deg, #00b894, #00d2a0);
+    }
+
+    .diff-medium .diff-bar {
+        background: linear-gradient(90deg, #f39c12, #ffc048);
+    }
+
+    .diff-hard .diff-bar {
+        background: linear-gradient(90deg, #e84393, #ff6fb1);
+    }
+
+    .diff-count {
+        font-size: .75rem;
+        color: #8888a0;
+        min-width: 40px;
+        text-align: right;
+    }
+
+    .diff-checkbox {
+        width: 16px;
+        height: 16px;
+        accent-color: #6c63ff;
+        cursor: pointer;
+    }
+
+    /* ── Platform Cards ── */
+    .platform-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .platform-card {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f8f9fc;
+        border: 1.5px solid rgba(0, 0, 0, 0.07);
+        border-radius: 12px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all .25s;
+        text-decoration: none;
+        color: #1a1a2e;
+    }
+
+    .platform-card:hover {
+        border-color: #6c63ff;
+        background: rgba(108, 99, 255, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(108, 99, 255, 0.12);
+        color: #1a1a2e;
+    }
+
+    .platform-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .platform-info {
+        flex: 1;
+    }
+
+    .platform-name {
+        font-size: .82rem;
+        font-weight: 700;
+    }
+
+    .platform-qs {
+        font-size: .72rem;
+        color: #8888a0;
+    }
+
+    .platform-arrow {
+        color: #8888a0;
+        font-size: .75rem;
+    }
+
+    /* ── Trending Questions ── */
+    .trending-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .trending-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f8f9fc;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 12px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all .25s;
+    }
+
+    .trending-item:hover {
+        border-color: #6c63ff;
+        background: rgba(108, 99, 255, 0.04);
+        transform: translateX(4px);
+    }
+
+    .trending-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6c63ff, #a855f7);
+        color: #fff;
+        font-size: .7rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .trending-text {
+        flex: 1;
+        font-size: .83rem;
+        font-weight: 500;
+        color: #1a1a2e;
+    }
+
+    .trending-tag {
+        font-size: .68rem;
+        padding: 2px 8px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .tag-easy-t {
+        background: rgba(0, 184, 148, 0.14);
+        color: #00b894;
+    }
+
+    .tag-med-t {
+        background: rgba(243, 156, 18, 0.14);
+        color: #e67e22;
+    }
+
+    .tag-hard-t {
+        background: rgba(232, 67, 147, 0.14);
+        color: #e84393;
+    }
+
+    /* ── Right Panel - Form ── */
+    .form-section-title {
+        font-size: .82rem;
+        font-weight: 700;
+        color: #8888a0;
+        text-transform: uppercase;
+        letter-spacing: .8px;
+        margin-bottom: 10px;
+    }
+
+    .compact-form-group {
+        margin-bottom: 18px;
+    }
+
+    .compact-form-group label {
+        display: block;
+        font-size: .82rem;
+        font-weight: 600;
+        color: #555570;
+        margin-bottom: 6px;
+    }
+
+    .compact-form-group label i {
+        margin-right: 5px;
+        color: #6c63ff;
+    }
+
+    .compact-form-group input,
+    .compact-form-group select {
+        width: 100%;
+        background: #f4f5f9;
+        border: 1.5px solid rgba(0, 0, 0, 0.08);
+        border-radius: 10px;
+        padding: 11px 14px;
+        font-size: .88rem;
+        font-family: 'Inter', sans-serif;
+        color: #1a1a2e;
+        outline: none;
+        transition: all .25s;
+    }
+
+    .compact-form-group input:focus,
+    .compact-form-group select:focus {
+        border-color: #6c63ff;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+    }
+
+    .compact-form-group select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238888a0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-color: #f4f5f9;
+    }
+
+    /* Mini type cards */
+    .mini-type-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+
+    .mini-type-card {
+        cursor: pointer;
+        position: relative;
+    }
+
+    .mini-type-card input {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .mini-type-card-content {
+        background: #f8f9fc;
+        border: 2px solid rgba(0, 0, 0, 0.08);
+        border-radius: 10px;
+        padding: 12px 8px;
+        text-align: center;
+        transition: all .25s;
+    }
+
+    .mini-type-card input:checked+.mini-type-card-content {
+        border-color: #6c63ff;
+        background: rgba(108, 99, 255, 0.08);
+    }
+
+    .mini-type-card-content i {
+        font-size: 1.1rem;
+        color: #6c63ff;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .mini-type-card-content span {
+        font-size: .72rem;
+        font-weight: 600;
+        color: #555570;
+        display: block;
+    }
+
+    /* Q-count slider */
+    .q-slider-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .q-slider-wrap input[type=range] {
+        flex: 1;
+        -webkit-appearance: none;
+        height: 6px;
+        background: rgba(0, 0, 0, 0.08);
+        border-radius: 3px;
+        outline: none;
+    }
+
+    .q-slider-wrap input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        background: #6c63ff;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 6px rgba(108, 99, 255, 0.35);
+    }
+
+    .q-slider-value {
+        font-weight: 700;
+        font-size: .88rem;
+        color: #6c63ff;
+        min-width: 90px;
+        text-align: right;
+    }
+
+    /* Upload area */
+    .mini-upload {
+        border: 2px dashed rgba(108, 99, 255, 0.3);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all .25s;
+        position: relative;
+        background: rgba(108, 99, 255, 0.02);
+        margin-bottom: 18px;
+    }
+
+    .mini-upload:hover {
+        border-color: #6c63ff;
+        background: rgba(108, 99, 255, 0.06);
+    }
+
+    .mini-upload-input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .mini-upload i {
+        font-size: 1.5rem;
+        color: #6c63ff;
+        margin-bottom: 6px;
+    }
+
+    .mini-upload p {
+        font-size: .78rem;
+        color: #555570;
+    }
+
+    .mini-upload-hint {
+        font-size: .7rem;
+        color: #aaa;
+    }
+
+    .mini-upload-preview {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+        font-size: .82rem;
+    }
+
+    .mini-upload-preview i {
+        color: #e84393;
+    }
+
+    /* Saved resume banner */
+    .saved-resume-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: linear-gradient(135deg, rgba(0, 184, 148, 0.08), rgba(0, 184, 148, 0.03));
+        border: 1.5px solid rgba(0, 184, 148, 0.25);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    .saved-resume-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .saved-resume-icon {
+        color: #e84393;
+        font-size: 1.3rem;
+    }
+
+    .saved-resume-label {
+        font-size: .7rem;
+        color: #00b894;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        display: block;
+    }
+
+    .saved-resume-name {
+        font-size: .82rem;
+        font-weight: 600;
+        color: #1a1a2e;
+        display: block;
+    }
+
+    .saved-resume-date {
+        font-size: .7rem;
+        color: #8888a0;
+        display: block;
+    }
+
+    .saved-resume-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .saved-resume-badge {
+        font-size: .7rem;
+        background: rgba(0, 184, 148, 0.15);
+        color: #00b894;
+        border-radius: 8px;
+        padding: 3px 8px;
+        font-weight: 600;
+    }
+
+    /* Action buttons */
+    .setup-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-start {
+        width: 100%;
+        justify-content: center;
+        background: linear-gradient(135deg, #6c63ff, #a855f7);
+        color: #fff;
+        padding: 14px 24px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all .3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 16px rgba(108, 99, 255, 0.35);
+    }
+
+    .btn-start:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(108, 99, 255, 0.5);
+        color: #fff;
+    }
+
+    .btn-back {
+        width: 100%;
+        justify-content: center;
+        background: #f4f5f9;
+        border: 1.5px solid rgba(0, 0, 0, 0.08);
+        color: #555570;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: .9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .25s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-back:hover {
+        background: #e8e9f0;
+        color: #1a1a2e;
+        transform: translateY(-1px);
+    }
+
+    /* Quick tip */
+    .quick-tip {
+        background: linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(168, 85, 247, 0.06));
+        border: 1px solid rgba(108, 99, 255, 0.18);
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: .8rem;
+        color: #555570;
+        line-height: 1.6;
+    }
+
+    .quick-tip strong {
+        color: #6c63ff;
+    }
+
+    .quick-tip i {
+        color: #6c63ff;
+        margin-right: 4px;
+    }
+
+    /* ── Section heading with see-all ── */
+    .section-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+
+    .section-row h2 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #1a1a2e;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .see-all {
+        font-size: .8rem;
+        color: #6c63ff;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .see-all:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .setup-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .plan-cards {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .setup-right {
+            order: -1;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .setup-hero {
+            padding: 32px 20px;
+        }
+
+        .setup-hero h1 {
+            font-size: 1.6rem;
+        }
+
+        .plan-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .topics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .platform-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<nav class="navbar glass-nav">
+    <div class="nav-container">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">
+            <i class="fas fa-bolt"></i>
+            <span>Interview<strong>Master</strong></span>
+        </a>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="{{ url_for('logout') }}" class="nav-btn nav-btn-outline" id="navLogoutSetup"><i
+                    class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="setup-main">
+    <div class="container">
+
+        <!-- ── Hero Banner ── -->
+        <div class="setup-hero animate-fade-in">
+            <div class="setup-hero-orb1"></div>
+            <div class="setup-hero-orb2"></div>
+            <div class="setup-hero-content">
+                <div class="setup-hero-badge"><i class="fas fa-rocket"></i> AI-Powered Mock Interviews</div>
+                <h1>Setup Your Interview Session</h1>
+                <p>Choose your role, company, topic — and let AI craft your perfect practice interview.</p>
+
+                <!-- Plan selection cards -->
+                <div class="plan-cards">
+                    <div class="plan-card active" id="planFree" onclick="selectPlan('free')">
+                        <div class="plan-check"><i class="fas fa-check"></i></div>
+                        <div class="plan-icon">🆓</div>
+                        <div class="plan-name">Free</div>
+                        <div class="plan-desc">5 questions/session</div>
+                        <div class="plan-price">$0 <span>/ forever</span></div>
+                    </div>
+                    <div class="plan-card" id="planPro" onclick="selectPlan('pro')">
+                        <div class="plan-badge-pro">Popular</div>
+                        <div class="plan-check"><i class="fas fa-check"></i></div>
+                        <div class="plan-icon">⚡</div>
+                        <div class="plan-name">Pro</div>
+                        <div class="plan-desc">Unlimited + Analytics</div>
+                        <div class="plan-price">$9 <span>/ month</span></div>
+                    </div>
+                    <div class="plan-card" id="planPremium" onclick="selectPlan('premium')">
+                        <div class="plan-check"><i class="fas fa-check"></i></div>
+                        <div class="plan-icon">👑</div>
+                        <div class="plan-name">Premium</div>
+                        <div class="plan-desc">AI Coach + Roadmap</div>
+                        <div class="plan-price">$19 <span>/ month</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Main Grid ── -->
+        <div class="setup-grid">
+
+            <!-- LEFT: Browse topics & platforms -->
+            <div class="setup-left">
+
+                <!-- Topic Search & Browse -->
+                <div class="setup-panel">
+                    <div class="section-row">
+                        <h2><i class="fas fa-compass" style="color:#6c63ff"></i> Browse Interview Topics</h2>
+                        <span class="see-all" id="seeAllTopicsBtn" onclick="toggleTopicsVisibility()"
+                            style="cursor: pointer; display: flex; align-items: center; gap: 5px;">See all <i
+                                class="fas fa-chevron-down" style="font-size: 0.8rem; transition: transform 0.3s;"
+                                id="seeAllIcon"></i></span>
+                    </div>
+                    <div id="topicsContainerWrapper"
+                        style="display: none; overflow: hidden; transition: all 0.3s ease;">
+                        <div class="search-bar-wrap">
+                            <i class="fas fa-search search-bar-icon"></i>
+                            <input type="text" class="search-bar"
+                                placeholder="Search topics (e.g. Arrays, System Design, React...)" id="topicSearch"
+                                oninput="filterTopics(this.value)">
+                        </div>
+                        <div class="topics-grid" id="topicsGrid">
+                            <div class="topic-chip selected" data-topic="Arrays" onclick="toggleTopic(this)">
+                                <span class="chip-icon">📊</span> Arrays <span class="chip-count">85</span>
+                                <a href="{{ url_for('view_dataset', topic_id='arrays') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="Strings" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🔤</span> Strings <span class="chip-count">72</span>
+                                <a href="{{ url_for('view_dataset', topic_id='strings') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="Dynamic Programming" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🧩</span> DP <span class="chip-count">68</span>
+                                <a href="{{ url_for('view_dataset', topic_id='dp') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="Trees" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🌳</span> Trees <span class="chip-count">54</span>
+                                <a href="{{ url_for('view_dataset', topic_id='trees') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="Graphs" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🕸️</span> Graphs <span class="chip-count">49</span>
+                                <a href="{{ url_for('view_dataset', topic_id='graphs') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="Sorting" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🔀</span> Sorting <span class="chip-count">38</span>
+                                <a href="{{ url_for('view_dataset', topic_id='sorting') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="SQL" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🗄️</span> SQL <span class="chip-count">60</span>
+                                <a href="{{ url_for('view_dataset', topic_id='sql') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="System Design" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🏗️</span> System Design <span class="chip-count">45</span>
+                                <a href="{{ url_for('view_dataset', topic_id='system_design') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="OOP" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🎯</span> OOP <span class="chip-count">40</span>
+                                <a href="{{ url_for('view_dataset', topic_id='oop') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="React" onclick="toggleTopic(this)">
+                                <span class="chip-icon">⚛️</span> React <span class="chip-count">33</span>
+                                <a href="{{ url_for('view_dataset', topic_id='react') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="Python" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🐍</span> Python <span class="chip-count">55</span>
+                                <a href="{{ url_for('view_dataset', topic_id='python') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                            <div class="topic-chip" data-topic="Behavioral" onclick="toggleTopic(this)">
+                                <span class="chip-icon">🤝</span> Behavioral <span class="chip-count">30</span>
+                                <a href="{{ url_for('view_dataset', topic_id='behavioral') }}" target="_blank"
+                                    onclick="event.stopPropagation()" style="margin-left:5px; color:#6c63ff;"
+                                    title="View Dataset"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Difficulty Filter -->
+                <div class="setup-panel">
+                    <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Difficulty Breakdown</h2>
+                    <div class="difficulty-row">
+                        <div class="diff-item diff-easy">
+                            <input type="checkbox" class="diff-checkbox" id="diffEasy" checked>
+                            <label for="diffEasy" class="diff-label" style="color:#00b894;">Easy</label>
+                            <div class="diff-bar-wrap">
+                                <div class="diff-bar" style="width:65%"></div>
+                            </div>
+                            <span class="diff-count">324 Qs</span>
+                        </div>
+                        <div class="diff-item diff-medium">
+                            <input type="checkbox" class="diff-checkbox" id="diffMedium" checked>
+                            <label for="diffMedium" class="diff-label" style="color:#e67e22;">Medium</label>
+                            <div class="diff-bar-wrap">
+                                <div class="diff-bar" style="width:45%"></div>
+                            </div>
+                            <span class="diff-count">218 Qs</span>
+                        </div>
+                        <div class="diff-item diff-hard">
+                            <input type="checkbox" class="diff-checkbox" id="diffHard">
+                            <label for="diffHard" class="diff-label" style="color:#e84393;">Hard</label>
+                            <div class="diff-bar-wrap">
+                                <div class="diff-bar" style="width:28%"></div>
+                            </div>
+                            <span class="diff-count">136 Qs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform Questions -->
+                <div class="setup-panel">
+                    <div class="section-row">
+                        <h2><i class="fas fa-layer-group" style="color:#6c63ff"></i> Top Interview Questions by Platform
+                        </h2>
+                        <span class="see-all" id="seeAllPlatformsBtn" onclick="togglePlatformsVisibility()"
+                            style="cursor: pointer; display: flex; align-items: center; gap: 5px;">View all <i
+                                class="fas fa-chevron-down" style="font-size: 0.8rem; transition: transform 0.3s;"
+                                id="seeAllPlatformsIcon"></i></span>
+                    </div>
+                    <div id="platformsContainerWrapper"
+                        style="display: none; overflow: hidden; transition: all 0.3s ease;">
+                        <div class="platform-grid">
+                            <a href="https://leetcode.com/" target="_blank" class="platform-card">
+                                <div class="platform-icon" style="background:linear-gradient(135deg,#ff6b35,#ff9500)">💻
+                                </div>
+                                <div class="platform-info">
+                                    <div class="platform-name">LeetCode</div>
+                                    <div class="platform-qs">2400+ questions</div>
+                                </div>
+                                <i class="fas fa-external-link-alt platform-arrow"></i>
+                            </a>
+                            <a href="https://www.hackerrank.com/" target="_blank" class="platform-card">
+                                <div class="platform-icon" style="background:linear-gradient(135deg,#00a86b,#00d084)">⚡
+                                </div>
+                                <div class="platform-info">
+                                    <div class="platform-name">HackerRank</div>
+                                    <div class="platform-qs">1800+ questions</div>
+                                </div>
+                                <i class="fas fa-external-link-alt platform-arrow"></i>
+                            </a>
+                            <a href="https://www.codechef.com/" target="_blank" class="platform-card">
+                                <div class="platform-icon" style="background:linear-gradient(135deg,#6c63ff,#a855f7)">🏆
+                                </div>
+                                <div class="platform-info">
+                                    <div class="platform-name">CodeChef</div>
+                                    <div class="platform-qs">900+ questions</div>
+                                </div>
+                                <i class="fas fa-external-link-alt platform-arrow"></i>
+                            </a>
+                            <a href="https://www.geeksforgeeks.org/" target="_blank" class="platform-card">
+                                <div class="platform-icon" style="background:linear-gradient(135deg,#0984e3,#74b9ff)">🎯
+                                </div>
+                                <div class="platform-info">
+                                    <div class="platform-name">GeeksforGeeks</div>
+                                    <div class="platform-qs">3000+ questions</div>
+                                </div>
+                                <i class="fas fa-external-link-alt platform-arrow"></i>
+                            </a>
+                            <a href="https://www.interviewbit.com/" target="_blank" class="platform-card">
+                                <div class="platform-icon" style="background:linear-gradient(135deg,#e84393,#ff6fb1)">🌟
+                                </div>
+                                <div class="platform-info">
+                                    <div class="platform-name">InterviewBit</div>
+                                    <div class="platform-qs">500+ questions</div>
+                                </div>
+                                <i class="fas fa-external-link-alt platform-arrow"></i>
+                            </a>
+                            <a href="https://codeforces.com/" target="_blank" class="platform-card">
+                                <div class="platform-icon" style="background:linear-gradient(135deg,#f39c12,#ffc048)">🔥
+                                </div>
+                                <div class="platform-info">
+                                    <div class="platform-name">Codeforces</div>
+                                    <div class="platform-qs">1200+ questions</div>
+                                </div>
+                                <i class="fas fa-external-link-alt platform-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trending Questions -->
+                <div class="setup-panel">
+                    <div class="section-row">
+                        <h2><i class="fas fa-fire-alt" style="color:#e84393"></i> Trending Interview Questions</h2>
+                        <span class="see-all" id="seeAllTrendingBtn" onclick="toggleTrendingVisibility()"
+                            style="cursor: pointer; display: flex; align-items: center; gap: 5px;">More <i
+                                class="fas fa-chevron-down" style="font-size: 0.8rem; transition: transform 0.3s;"
+                                id="seeAllTrendingIcon"></i></span>
+                    </div>
+                    <div id="trendingContainerWrapper"
+                        style="display: none; overflow: hidden; transition: all 0.3s ease;">
+                        <div class="trending-list">
+                            <a href="{{ url_for('compiler', q='Two Sum — Find two numbers that add up to target', diff='Easy') }}"
+                                target="_blank" class="trending-item"
+                                style="text-decoration: none; color: inherit; display: flex; align-items: center; position: relative; transition: transform 0.2s; cursor: pointer;">
+                                <div class="trending-num">1</div>
+                                <span class="trending-text">Two Sum — Find two numbers that add up to target</span>
+                                <span class="trending-tag tag-easy-t">Easy</span>
+                                <i class="fas fa-play"
+                                    style="position: absolute; right: 80px; color: #000; opacity: 0.2; transform: scale(0.9);"></i>
+                            </a>
+                            <a href="{{ url_for('compiler', q='LRU Cache — Design a Least Recently Used cache', diff='Hard') }}"
+                                target="_blank" class="trending-item"
+                                style="text-decoration: none; color: inherit; display: flex; align-items: center; position: relative; transition: transform 0.2s; cursor: pointer;">
+                                <div class="trending-num">2</div>
+                                <span class="trending-text">LRU Cache — Design a Least Recently Used cache</span>
+                                <span class="trending-tag tag-hard-t">Hard</span>
+                                <i class="fas fa-play"
+                                    style="position: absolute; right: 80px; color: #000; opacity: 0.2; transform: scale(0.9);"></i>
+                            </a>
+                            <a href="{{ url_for('compiler', q='Merge Intervals — Merge overlapping intervals', diff='Medium') }}"
+                                target="_blank" class="trending-item"
+                                style="text-decoration: none; color: inherit; display: flex; align-items: center; position: relative; transition: transform 0.2s; cursor: pointer;">
+                                <div class="trending-num">3</div>
+                                <span class="trending-text">Merge Intervals — Merge overlapping intervals</span>
+                                <span class="trending-tag tag-med-t">Medium</span>
+                                <i class="fas fa-play"
+                                    style="position: absolute; right: 80px; color: #000; opacity: 0.2; transform: scale(0.9);"></i>
+                            </a>
+                            <a href="{{ url_for('compiler', q='Valid Parentheses — Check if sequence of brackets is valid', diff='Easy') }}"
+                                target="_blank" class="trending-item"
+                                style="text-decoration: none; color: inherit; display: flex; align-items: center; position: relative; transition: transform 0.2s; cursor: pointer;">
+                                <div class="trending-num">4</div>
+                                <span class="trending-text">Valid Parentheses — Check sequence of brackets</span>
+                                <span class="trending-tag tag-easy-t">Easy</span>
+                                <i class="fas fa-play"
+                                    style="position: absolute; right: 80px; color: #000; opacity: 0.2; transform: scale(0.9);"></i>
+                            </a>
+                            <a href="{{ url_for('compiler', q='Reverse a Linked List — In-place reversal', diff='Easy') }}"
+                                target="_blank" class="trending-item"
+                                style="text-decoration: none; color: inherit; display: flex; align-items: center; position: relative; transition: transform 0.2s; cursor: pointer;">
+                                <div class="trending-num">5</div>
+                                <span class="trending-text">Reverse a Linked List — In-place reversal</span>
+                                <span class="trending-tag tag-easy-t">Easy</span>
+                                <i class="fas fa-play"
+                                    style="position: absolute; right: 80px; color: #000; opacity: 0.2; transform: scale(0.9);"></i>
+                            </a>
+                            <a href="{{ url_for('compiler', q='Maximum Subarray — Find the contiguous subarray with largest sum', diff='Medium') }}"
+                                target="_blank" class="trending-item"
+                                style="text-decoration: none; color: inherit; display: flex; align-items: center; position: relative; transition: transform 0.2s; cursor: pointer;">
+                                <div class="trending-num">6</div>
+                                <span class="trending-text">Maximum Subarray — Find contiguous max sum</span>
+                                <span class="trending-tag tag-med-t">Medium</span>
+                                <i class="fas fa-play"
+                                    style="position: absolute; right: 80px; color: #000; opacity: 0.2; transform: scale(0.9);"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /.setup-left -->
+
+            <!-- RIGHT: Interview Config Form -->
+            <div class="setup-right">
+                <div class="setup-panel" style="position:sticky; top:84px;">
+                    <h2 class="panel-title"><i class="fas fa-cogs"></i> Configure Your Interview</h2>
+
+                    <form method="POST" action="{{ url_for('setup') }}" enctype="multipart/form-data" id="setupForm">
+                        <input type="hidden" name="selected_topics" id="selected_topics_input" value="Arrays">
+
+                        <!-- Job Role -->
+                        <div class="compact-form-group">
+                            <label for="job_role"><i class="fas fa-briefcase"></i> Target Role</label>
+                            <select id="job_role" name="job_role" required onchange="toggleCustomRole(this)">
+                                <option value="">-- Choose a Role --</option>
+                                <optgroup label="Software & Engineering">
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <option value="Frontend Developer">Frontend Developer</option>
+                                    <option value="Backend Developer">Backend Developer</option>
+                                    <option value="Full Stack Developer">Full Stack Developer</option>
+                                    <option value="DevOps Engineer">DevOps Engineer</option>
+                                    <option value="Data Engineer">Data Engineer</option>
+                                    <option value="Mobile Developer">Mobile Developer</option>
+                                    <option value="QA Engineer">QA Engineer</option>
+                                </optgroup>
+                                <optgroup label="Data & AI">
+                                    <option value="Data Scientist">Data Scientist</option>
+                                    <option value="Machine Learning Engineer">Machine Learning Engineer</option>
+                                    <option value="Data Analyst">Data Analyst</option>
+                                    <option value="AI Engineer">AI Engineer</option>
+                                </optgroup>
+                                <optgroup label="Management & Design">
+                                    <option value="Product Manager">Product Manager</option>
+                                    <option value="Project Manager">Project Manager</option>
+                                    <option value="UI/UX Designer">UI/UX Designer</option>
+                                    <option value="Business Analyst">Business Analyst</option>
+                                </optgroup>
+                                <optgroup label="Other">
+                                    <option value="Cloud Architect">Cloud Architect</option>
+                                    <option value="Cybersecurity Analyst">Cybersecurity Analyst</option>
+                                    <option value="Database Administrator">Database Administrator</option>
+                                    <option value="Technical Writer">Technical Writer</option>
+                                    <option value="custom">✏️ Custom Role...</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="compact-form-group" id="customRoleGroup" style="display:none;">
+                            <label for="custom_role"><i class="fas fa-pen"></i> Custom Role</label>
+                            <input type="text" id="custom_role" name="custom_role"
+                                placeholder="e.g., Blockchain Developer">
+                        </div>
+
+                        <!-- Company -->
+                        <div class="compact-form-group">
+                            <label for="company"><i class="fas fa-building"></i> Target Company</label>
+                            <input type="text" id="company" name="company" placeholder="e.g., Google, Amazon, Microsoft"
+                                required>
+                        </div>
+
+                        <!-- Interview Type -->
+                        <div style="margin-bottom:18px;">
+                            <p class="form-section-title">Interview Type</p>
+                            <div class="mini-type-cards">
+                                <label class="mini-type-card" id="typeTechnical">
+                                    <input type="radio" name="interview_type" value="technical"
+                                        onchange="if(this.checked) window.open('/compiler', '_blank')">
+                                    <div class="mini-type-card-content">
+                                        <i class="fas fa-code"></i>
+                                        <span>Technical <i class="fas fa-external-link-alt"
+                                                style="font-size:0.6rem;margin-left:2px;display:inline-block;margin-bottom:0;"></i></span>
+                                    </div>
+                                </label>
+                                <label class="mini-type-card" id="typeHR">
+                                    <input type="radio" name="interview_type" value="hr">
+                                    <div class="mini-type-card-content">
+                                        <i class="fas fa-users"></i>
+                                        <span>HR</span>
+                                    </div>
+                                </label>
+                                <label class="mini-type-card" id="typeMixed">
+                                    <input type="radio" name="interview_type" value="mixed" checked>
+                                    <div class="mini-type-card-content">
+                                        <i class="fas fa-random"></i>
+                                        <span>Mixed</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Number of Questions -->
+                        <div style="margin-bottom:18px;">
+                            <p class="form-section-title">Number of Questions</p>
+                            <div class="q-slider-wrap">
+                                <input type="range" id="num_questions" name="num_questions" min="5" max="20" value="10"
+                                    oninput="updateQCount(this.value)">
+                                <div class="q-slider-value" id="qCount">10 questions</div>
+                            </div>
+                        </div>
+
+                        <!-- Resume -->
+                        <div style="margin-bottom:18px;">
+                            <p class="form-section-title">Resume <span
+                                    style="font-weight:400;text-transform:none;letter-spacing:0;color:#aaa;font-size:.75rem;">(optional)</span>
+                            </p>
+
+                            {% if saved_resume %}
+                            <div class="saved-resume-banner" id="savedResumeBanner">
+                                <div class="saved-resume-info">
+                                    <i class="fas fa-file-pdf saved-resume-icon"></i>
+                                    <div class="saved-resume-details">
+                                        <span class="saved-resume-label"><i class="fas fa-check-circle"></i>
+                                            Saved</span>
+                                        <span class="saved-resume-name">{{ saved_resume.filename }}</span>
+                                        <span class="saved-resume-date">Uploaded {{ saved_resume.uploaded_at[:10]
+                                            }}</span>
+                                    </div>
+                                </div>
+                                <div class="saved-resume-actions">
+                                    <a href="{{ url_for('resume_page') }}" class="btn btn-glass btn-xs"
+                                        id="manageResumeLink"><i class="fas fa-cog"></i></a>
+                                    <button type="button" class="btn btn-glass btn-xs" onclick="showReplaceResume()"
+                                        id="replaceResumeBtn"><i class="fas fa-exchange-alt"></i></button>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="mini-upload" id="uploadArea" {% if saved_resume %}style="display:none;" {% endif
+                                %}>
+                                <input type="file" id="resume" name="resume" accept=".pdf" class="mini-upload-input"
+                                    onchange="handleFileUpload(this)">
+                                <div id="uploadContent">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Drop PDF or <strong>click to browse</strong></p>
+                                    <span class="mini-upload-hint">PDF only · max 5MB</span>
+                                </div>
+                                <div class="mini-upload-preview" id="uploadPreview">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <span id="uploadFileName"></span>
+                                    <button type="button" class="btn btn-glass btn-xs" onclick="clearUpload()"><i
+                                            class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+
+                            {% if saved_resume %}
+                            <div id="cancelReplaceWrap" style="display:none;margin-top:6px;">
+                                <button type="button" class="btn btn-glass btn-xs" onclick="cancelReplace()"><i
+                                        class="fas fa-arrow-left"></i> Keep saved</button>
+                            </div>
+                            {% else %}
+                            <div style="font-size:.75rem;color:#8888a0;margin-top:6px;">
+                                <i class="fas fa-info-circle" style="color:#6c63ff"></i>
+                                <a href="{{ url_for('resume_page') }}" style="color:#6c63ff;font-weight:600;">Save
+                                    resume permanently</a> for auto-load.
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="setup-actions">
+                            <button type="submit" class="btn-start" id="startMockBtn">
+                                <i class="fas fa-rocket"></i> Start Interview
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+
+                    </form>
+
+                    <!-- Quick tip -->
+                    <div class="quick-tip" style="margin-top:16px;">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Pro Tip:</strong> Upload your resume for AI-tailored questions based on your actual
+                        experience and skills.
+                    </div>
+                </div>
+            </div><!-- /.setup-right -->
+
+        </div><!-- /.setup-grid -->
+    </div>
+</main>
+
+<script>
+    /* Plan selection */
+    function selectPlan(plan) {
+        ['free', 'pro', 'premium'].forEach(p => {
+            document.getElementById('plan' + p.charAt(0).toUpperCase() + p.slice(1)).classList.remove('active');
+        });
+        document.getElementById('plan' + plan.charAt(0).toUpperCase() + plan.slice(1)).classList.add('active');
+    }
+
+    /* Custom role toggle */
+    function toggleCustomRole(sel) {
+        document.getElementById('customRoleGroup').style.display = sel.value === 'custom' ? 'block' : 'none';
+    }
+
+    /* Q count update */
+    function updateQCount(val) {
+        document.getElementById('qCount').textContent = val + ' questions';
+    }
+
+    /* Topic chip toggle */
+    function toggleTopic(chip) {
+        chip.classList.toggle('selected');
+        const selected = document.querySelectorAll('.topic-chip.selected');
+        const topics = Array.from(selected).map(el => el.dataset.topic);
+        const hiddenInput = document.getElementById('selected_topics_input');
+        if (hiddenInput) {
+            hiddenInput.value = topics.join(', ');
+        }
+    }
+
+    /* Topic search filter */
+    function filterTopics(query) {
+        const chips = document.querySelectorAll('.topic-chip');
+        const q = query.toLowerCase();
+        chips.forEach(chip => {
+            chip.style.display = chip.dataset.topic.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+
+    /* File upload */
+    function handleFileUpload(input) {
+        if (input.files && input.files[0]) {
+            document.getElementById('uploadContent').style.display = 'none';
+            const prev = document.getElementById('uploadPreview');
+            prev.style.display = 'flex';
+            document.getElementById('uploadFileName').textContent = input.files[0].name;
+        }
+    }
+    function clearUpload() {
+        document.getElementById('resume').value = '';
+        document.getElementById('uploadContent').style.display = 'block';
+        document.getElementById('uploadPreview').style.display = 'none';
+    }
+
+    /* Replace / cancel resume */
+    function showReplaceResume() {
+        const banner = document.getElementById('savedResumeBanner');
+        const area = document.getElementById('uploadArea');
+        const cancel = document.getElementById('cancelReplaceWrap');
+        if (banner) banner.style.display = 'none';
+        if (area) area.style.display = 'block';
+        if (cancel) cancel.style.display = 'block';
+    }
+    function cancelReplace() {
+        const banner = document.getElementById('savedResumeBanner');
+        const area = document.getElementById('uploadArea');
+        const cancel = document.getElementById('cancelReplaceWrap');
+        if (banner) banner.style.display = 'flex';
+        if (area) area.style.display = 'none';
+        if (cancel) cancel.style.display = 'none';
+        clearUpload();
+    }
+
+    /* Topics toggle */
+    function toggleTopicsVisibility() {
+        const wrapper = document.getElementById('topicsContainerWrapper');
+        const icon = document.getElementById('seeAllIcon');
+        if (wrapper.style.display === 'none') {
+            wrapper.style.display = 'block';
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            wrapper.style.display = 'none';
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    /* Platforms toggle */
+    function togglePlatformsVisibility() {
+        const wrapper = document.getElementById('platformsContainerWrapper');
+        const icon = document.getElementById('seeAllPlatformsIcon');
+        if (wrapper.style.display === 'none') {
+            wrapper.style.display = 'block';
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            wrapper.style.display = 'none';
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    /* Trending toggle */
+    function toggleTrendingVisibility() {
+        const wrapper = document.getElementById('trendingContainerWrapper');
+        const icon = document.getElementById('seeAllTrendingIcon');
+        if (wrapper.style.display === 'none') {
+            wrapper.style.display = 'block';
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            wrapper.style.display = 'none';
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    /* Loading state on submit */
+    document.getElementById('setupForm').addEventListener('submit', function () {
+        const btn = document.getElementById('startMockBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Questions...';
+        btn.disabled = true;
+        btn.style.opacity = '.8';
+    });
+</script>
+{% endblock %}

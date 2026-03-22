@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Check if a string is a palindrome",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Find the longest substring without repeating characters",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Check if two strings are anagrams of each other",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Implement string compression, e.g., aabbbcccc -> a2b3c4",
+        "difficulty": "Medium",
+        "category": "Technical"
+    }
+]

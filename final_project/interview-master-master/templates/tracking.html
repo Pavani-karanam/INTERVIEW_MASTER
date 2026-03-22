@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Tracker - Interview Master</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --bg: #0a0f1e;
+  --card: #111827;
+  --card2: #1a2235;
+  --border: rgba(99,102,241,0.25);
+  --accent: #6366f1;
+  --accent2: #8b5cf6;
+  --accent3: #06b6d4;
+  --green: #10b981;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --pink: #ec4899;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --glow: rgba(99,102,241,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ---- HEADER ---- */
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);}
+.logo{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:800;}
+.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px var(--glow);}
+.header-badges{display:flex;gap:10px;}
+.badge{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;}
+.badge-web{background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.5);color:#a5b4fc;}
+.badge-mobile{background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.5);color:#6ee7b7;}
+.badge-live{background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.5);color:#fca5a5;}
+.live-dot{width:7px;height:7px;background:#ef4444;border-radius:50%;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.4);}}
+
+/* ---- MAIN ---- */
+.main{padding:40px;}
+.page-title{text-align:center;margin-bottom:10px;}
+.page-title h1{font-size:36px;font-weight:900;background:linear-gradient(135deg,#a5b4fc,#818cf8,#6ee7b7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-title p{color:var(--muted);margin-top:8px;font-size:15px;}
+
+/* ---- STATS ROW ---- */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin:30px 0;}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 16px;text-align:center;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;}
+.stat-box:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(99,102,241,0.2);}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;}
+.stat-box:nth-child(1)::before{background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.stat-box:nth-child(2)::before{background:linear-gradient(90deg,var(--green),#34d399);}
+.stat-box:nth-child(3)::before{background:linear-gradient(90deg,var(--orange),#fbbf24);}
+.stat-box:nth-child(4)::before{background:linear-gradient(90deg,var(--accent3),#22d3ee);}
+.stat-box:nth-child(5)::before{background:linear-gradient(90deg,var(--pink),#f472b6);}
+.stat-num{font-size:32px;font-weight:900;margin-bottom:4px;}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.stat-icon{font-size:22px;margin-bottom:8px;}
+
+/* ---- PIPELINE SECTION ---- */
+.section-title{font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.section-title span{display:flex;align-items:center;gap:8px;}
+.section-title .line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+
+/* ---- PIPELINE FLOW ---- */
+.pipeline-wrap{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:32px;overflow:hidden;position:relative;}
+.pipeline-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
+
+.flow-label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:24px;display:flex;align-items:center;gap:8px;}
+.flow-label i{color:var(--accent);}
+
+.pipeline{display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:10px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+
+.pipe-node{flex-shrink:0;background:var(--card2);border:1.5px solid var(--border);border-radius:14px;padding:16px 18px;text-align:center;min-width:120px;position:relative;cursor:pointer;transition:all .3s;}
+.pipe-node:hover{border-color:var(--accent);box-shadow:0 0 20px rgba(99,102,241,0.25);transform:translateY(-3px);}
+.pipe-node.active{border-color:var(--accent);box-shadow:0 0 25px rgba(99,102,241,0.35);background:rgba(99,102,241,0.1);}
+.pipe-node.success{border-color:var(--green);box-shadow:0 0 20px rgba(16,185,129,0.2);}
+.pipe-node.warn{border-color:var(--orange);box-shadow:0 0 20px rgba(245,158,11,0.2);}
+.pipe-node.api{border-color:var(--accent3);box-shadow:0 0 20px rgba(6,182,212,0.2);}
+.pipe-node.db{border-color:var(--pink);box-shadow:0 0 20px rgba(236,72,153,0.2);}
+.pipe-step{width:12px;height:12px;border-radius:50%;margin-bottom:8px;display:inline-block;}
+.n-icon{font-size:22px;margin-bottom:8px;display:block;}
+.n-title{font-size:12px;font-weight:700;white-space:nowrap;}
+.n-sub{font-size:10px;color:var(--muted);margin-top:3px;white-space:nowrap;}
+
+.arrow{flex-shrink:0;display:flex;align-items:center;padding:0 6px;}
+.arrow-line{width:40px;height:2px;position:relative;overflow:visible;}
+.arrow-line::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));animation:flow-anim 2s linear infinite;}
+.arrow-line.green::before{background:linear-gradient(90deg,var(--green),#34d399);}
+.arrow-line.cyan::before{background:linear-gradient(90deg,var(--accent3),#22d3ee);}
+.arrow-line.orange::before{background:linear-gradient(90deg,var(--orange),#fbbf24);}
+.arrow-head{color:var(--accent);font-size:14px;}
+.arrow-head.green{color:var(--green);}
+.arrow-head.cyan{color:var(--accent3);}
+.arrow-head.orange{color:var(--orange);}
+@keyframes flow-anim{0%{background-position:-40px 0;}100%{background-position:40px 0;}}
+
+/* ---- TWO COLUMN LAYOUT ---- */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:32px;}
+
+/* ---- DEVICE PANELS ---- */
+.device-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;}
+.device-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.device-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.device-web .device-icon{background:rgba(99,102,241,0.2);color:#a5b4fc;}
+.device-mobile .device-icon{background:rgba(16,185,129,0.2);color:#6ee7b7;}
+.device-title{font-size:15px;font-weight:700;}
+.device-url{font-size:11px;color:var(--muted);font-family:monospace;}
+.page-list{display:flex;flex-direction:column;gap:8px;}
+.page-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card2);border-radius:10px;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
+.page-item:hover{border-color:var(--accent);background:rgba(99,102,241,0.08);}
+.page-item-left{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;}
+.page-item-left i{width:18px;text-align:center;color:var(--muted);}
+.page-status{display:flex;align-items:center;gap:6px;font-size:11px;}
+.dot{width:7px;height:7px;border-radius:50%;}
+.dot-green{background:var(--green);}
+.dot-blue{background:var(--accent);}
+.dot-orange{background:var(--orange);}
+.method-badge{padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;font-family:monospace;}
+.get{background:rgba(16,185,129,0.2);color:#6ee7b7;}
+.post{background:rgba(245,158,11,0.2);color:#fbbf24;}
+.api-b{background:rgba(6,182,212,0.2);color:#67e8f9;}
+
+/* ---- DB SCHEMA ---- */
+.db-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;}
+.table-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;}
+.table-head{display:flex;align-items:center;gap:8px;padding:12px 14px;background:rgba(99,102,241,0.08);border-bottom:1px solid var(--border);font-size:13px;font-weight:700;}
+.table-head i{color:var(--accent);}
+.col-list{padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px;}
+.col-pill{padding:3px 10px;border-radius:6px;font-size:11px;font-family:monospace;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);}
+.col-pill.pk{border-color:var(--orange);color:#fbbf24;}
+.col-pill.fk{border-color:var(--accent3);color:#67e8f9;}
+
+/* ---- AI PIPELINE ---- */
+.ai-flow{display:flex;flex-direction:column;gap:12px;}
+.ai-step{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--card2);border-radius:12px;border:1px solid var(--border);position:relative;transition:all .3s;}
+.ai-step:hover{border-color:var(--accent2);transform:translateX(4px);}
+.ai-step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.ai-step-info{flex:1;}
+.ai-step-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+.ai-step-desc{font-size:11px;color:var(--muted);}
+.ai-step-tag{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;}
+.tag-ai{background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.4);color:#c4b5fd;}
+.tag-db{background:rgba(236,72,153,0.2);border:1px solid rgba(236,72,153,0.4);color:#f9a8d4;}
+.tag-user{background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);color:#a5b4fc;}
+.tag-system{background:rgba(6,182,212,0.2);border:1px solid rgba(6,182,212,0.4);color:#a5f3fc;}
+.vert-arrow{text-align:center;color:var(--muted);font-size:16px;margin:-4px 0;}
+
+/* ---- MOBILE SCREEN MOCK ---- */
+.phone-wrap{display:flex;justify-content:center;padding:10px;}
+.phone{width:200px;background:#0d1117;border:2px solid #334155;border-radius:30px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(99,102,241,0.3);position:relative;}
+.phone-notch{width:60px;height:20px;background:#0d1117;border-radius:0 0 14px 14px;margin:0 auto;position:relative;z-index:2;}
+.phone-screen{background:linear-gradient(160deg,#1e1b4b,#0f172a);min-height:360px;padding:10px;border-top:1px solid #1e293b;}
+.ph-bar{height:6px;border-radius:3px;margin-bottom:8px;}
+.ph-card{background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:8px;margin-bottom:6px;}
+.ph-line{height:8px;border-radius:4px;background:rgba(255,255,255,0.15);margin-bottom:5px;}
+.ph-line.short{width:60%;}
+.ph-line.med{width:80%;}
+.ph-btn{height:24px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));margin-top:6px;}
+.ph-nav{display:flex;justify-content:space-around;padding:8px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px;}
+.ph-nav-dot{width:24px;height:24px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:11px;}
+
+/* ---- ENDPOINT TABLE ---- */
+.ep-table{width:100%;border-collapse:collapse;font-size:13px;}
+.ep-table th{text-align:left;padding:12px 16px;background:rgba(99,102,241,0.08);border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
+.ep-table td{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+.ep-table tr:hover td{background:rgba(255,255,255,0.02);}
+.ep-table code{background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:6px;font-family:monospace;font-size:11px;color:#a5b4fc;}
+
+/* ---- LEGEND ---- */
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:24px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.legend-dot{width:12px;height:12px;border-radius:3px;}
+
+/* ---- FOOTER ---- */
+.footer{text-align:center;padding:32px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:20px;}
+.footer span{color:var(--accent);}
+
+/* ---- ANIMATIONS ---- */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeInUp .5s ease both;}
+.delay-1{animation-delay:.1s;}
+.delay-2{animation-delay:.2s;}
+.delay-3{animation-delay:.3s;}
+.delay-4{animation-delay:.4s;}
+
+/* ---- RESPONSIVE ---- */
+@media(max-width:1024px){.stats-row{grid-template-columns:repeat(3,1fr);}.two-col,.three-col{grid-template-columns:1fr;}}
+@media(max-width:640px){.stats-row{grid-template-columns:1fr 1fr;}.main{padding:20px;}.header{padding:14px 20px;}.logo{font-size:18px;}.header-badges{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon"><i class="fas fa-bolt"></i></div>
+    Interview<strong>Master</strong>&nbsp;<small style="color:var(--muted);font-size:13px;font-weight:400;">Pipeline Tracker</small>
+  </div>
+  <div class="header-badges">
+    <span class="badge badge-web"><i class="fas fa-globe"></i> Web App</span>
+    <span class="badge badge-mobile"><i class="fas fa-mobile-alt"></i> Mobile</span>
+    <span class="badge badge-live"><span class="live-dot"></span> Live Tracking</span>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- PAGE TITLE -->
+  <div class="page-title fade-up">
+    <h1>🔗 Full System Pipeline Tracker</h1>
+    <p>Every connection, route, and data flow — Web &amp; Mobile — visualized end-to-end</p>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend fade-up delay-1">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div> Web Route</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div> Auth Flow</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange);"></div> AI Engine</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent3);"></div> API Endpoint</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--pink);"></div> Database</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent2);"></div> Mobile App</div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row fade-up delay-1">
+    <div class="stat-box">
+      <div class="stat-icon">🌐</div>
+      <div class="stat-num" style="color:#a5b4fc;">9</div>
+      <div class="stat-lbl">Web Routes</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">📡</div>
+      <div class="stat-num" style="color:#6ee7b7;">3</div>
+      <div class="stat-lbl">API Endpoints</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">🗄️</div>
+      <div class="stat-num" style="color:#fbbf24;">5</div>
+      <div class="stat-lbl">DB Tables</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">🤖</div>
+      <div class="stat-num" style="color:#67e8f9;">3</div>
+      <div class="stat-lbl">AI Functions</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">📱</div>
+      <div class="stat-num" style="color:#f9a8d4;">5</div>
+      <div class="stat-lbl">Mobile Screens</div>
+    </div>
+  </div>
+
+  <!-- PIPELINE 1: USER JOURNEY -->
+  <div class="pipeline-wrap fade-up delay-2">
+    <div class="flow-label"><i class="fas fa-user-circle"></i> User Journey Pipeline — Full Interview Flow</div>
+    <div class="pipeline">
+
+      <div class="pipe-node">
+        <span class="n-icon">🏠</span>
+        <div class="n-title">Home</div>
+        <div class="n-sub">/ index</div>
+      </div>
+      <div class="arrow"><div class="arrow-line"></div><i class="fas fa-chevron-right arrow-head"></i></div>
+
+      <div class="pipe-node success">
+        <span class="n-icon">📝</span>
+        <div class="n-title">Register</div>
+        <div class="n-sub">/register</div>
+      </div>
+      <div class="arrow"><div class="arrow-line green"></div><i class="fas fa-chevron-right arrow-head green"></i></div>
+
+      <div class="pipe-node success">
+        <span class="n-icon">🔐</span>
+        <div class="n-title">Login</div>
+        <div class="n-sub">/login</div>
+      </div>
+      <div class="arrow"><div class="arrow-line green"></div><i class="fas fa-chevron-right arrow-head green"></i></div>
+
+      <div class="pipe-node active">
+        <span class="n-icon">📊</span>
+        <div class="n-title">Dashboard</div>
+        <div class="n-sub">/dashboard</div>
+      </div>
+      <div class="arrow"><div class="arrow-line"></div><i class="fas fa-chevron-right arrow-head"></i></div>
+
+      <div class="pipe-node active">
+        <span class="n-icon">⚙️</span>
+        <div class="n-title">Setup</div>
+        <div class="n-sub">/setup</div>
+      </div>
+      <div class="arrow"><div class="arrow-line orange"></div><i class="fas fa-chevron-right arrow-head orange"></i></div>
+
+      <div class="pipe-node warn">
+        <span class="n-icon">🤖</span>
+        <div class="n-title">AI Gen</div>
+        <div class="n-sub">Gemini API</div>
+      </div>
+      <div class="arrow"><div class="arrow-line orange"></div><i class="fas fa-chevron-right arrow-head orange"></i></div>
+
+      <div class="pipe-node active">
+        <span class="n-icon">🎤</span>
+        <div class="n-title">Interview</div>
+        <div class="n-sub">/interview/id</div>
+      </div>
+      <div class="arrow"><div class="arrow-line cyan"></div><i class="fas fa-chevron-right arrow-head cyan"></i></div>
+
+      <div class="pipe-node api">
+        <span class="n-icon">📡</span>
+        <div class="n-title">Evaluate</div>
+        <div class="n-sub">/api/submit</div>
+      </div>
+      <div class="arrow"><div class="arrow-line cyan"></div><i class="fas fa-chevron-right arrow-head cyan"></i></div>
+
+      <div class="pipe-node db">
+        <span class="n-icon">📈</span>
+        <div class="n-title">Results</div>
+        <div class="n-sub">/results/id</div>
+      </div>
+      <div class="arrow"><div class="arrow-line"></div><i class="fas fa-chevron-right arrow-head"></i></div>
+
+      <div class="pipe-node">
+        <span class="n-icon">📜</span>
+        <div class="n-title">History</div>
+        <div class="n-sub">/history</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PIPELINE 2: DATA FLOW -->
+  <div class="pipeline-wrap fade-up delay-2">
+    <div class="flow-label"><i class="fas fa-database"></i> Data Flow Pipeline — Resume → AI → Database</div>
+    <div class="pipeline">
+
+      <div class="pipe-node">
+        <span class="n-icon">👤</span>
+        <div class="n-title">User</div>
+        <div class="n-sub">Uploads PDF</div>
+      </div>
+      <div class="arrow"><div class="arrow-line green"></div><i class="fas fa-chevron-right arrow-head green"></i></div>
+
+      <div class="pipe-node success">
+        <span class="n-icon">📄</span>
+        <div class="n-title">PyPDF2</div>
+        <div class="n-sub">Extract Text</div>
+      </div>
+      <div class="arrow"><div class="arrow-line green"></div><i class="fas fa-chevron-right arrow-head green"></i></div>
+
+      <div class="pipe-node db">
+        <span class="n-icon">💾</span>
+        <div class="n-title">resumes</div>
+        <div class="n-sub">DB Table</div>
+      </div>
+      <div class="arrow"><div class="arrow-line orange"></div><i class="fas fa-chevron-right arrow-head orange"></i></div>
+
+      <div class="pipe-node warn">
+        <span class="n-icon">🧠</span>
+        <div class="n-title">gen_questions</div>
+        <div class="n-sub">AI Function</div>
+      </div>
+      <div class="arrow"><div class="arrow-line orange"></div><i class="fas fa-chevron-right arrow-head orange"></i></div>
+
+      <div class="pipe-node db">
+        <span class="n-icon">❓</span>
+        <div class="n-title">questions</div>
+        <div class="n-sub">DB Table</div>
+      </div>
+      <div class="arrow"><div class="arrow-line cyan"></div><i class="fas fa-chevron-right arrow-head cyan"></i></div>
+
+      <div class="pipe-node api">
+        <span class="n-icon">🎙️</span>
+        <div class="n-title">User Answer</div>
+        <div class="n-sub">speech/text</div>
+      </div>
+      <div class="arrow"><div class="arrow-line cyan"></div><i class="fas fa-chevron-right arrow-head cyan"></i></div>
+
+      <div class="pipe-node warn">
+        <span class="n-icon">🔍</span>
+        <div class="n-title">evaluate</div>
+        <div class="n-sub">AI Grade</div>
+      </div>
+      <div class="arrow"><div class="arrow-line orange"></div><i class="fas fa-chevron-right arrow-head orange"></i></div>
+
+      <div class="pipe-node warn">
+        <span class="n-icon">📋</span>
+        <div class="n-title">overall_fb</div>
+        <div class="n-sub">AI Report</div>
+      </div>
+      <div class="arrow"><div class="arrow-line"></div><i class="fas fa-chevron-right arrow-head"></i></div>
+
+      <div class="pipe-node db">
+        <span class="n-icon">🏆</span>
+        <div class="n-title">perf_details</div>
+        <div class="n-sub">DB Table</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WEB + MOBILE PANELS -->
+  <div class="two-col">
+
+    <!-- WEB PAGES -->
+    <div class="device-panel device-web fade-up delay-2">
+      <div class="device-header">
+        <div class="device-icon"><i class="fas fa-globe"></i></div>
+        <div>
+          <div class="device-title">🌐 Web Application Routes</div>
+          <div class="device-url">http://localhost:8000 · Flask · Python</div>
+        </div>
+      </div>
+      <div class="page-list">
+        <div class="page-item">
+          <div class="page-item-left"><i class="fas fa-home"></i> <span>Home / Landing</span></div>
+          <div class="page-status"><span class="dot dot-green"></span><span class="method-badge get">GET</span><code style="font-size:10px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">/</code></div>
+        </div>
+        <div class="page-item">
+          <div class="page-item-left"><i class="fas fa-user-plus"></i> <span>Register</span></div>
+          <div class="page-status"><span class="dot dot-blue"></span><span class="method-badge post">POST</span><code style="font-size:10px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">/register</code></div>
+        </div>
+        <div class="page-item">
+          <div class="page-item-left"><i class="fas fa-sign-in-alt"></i> <span>Login</span></div>
+          <div class="page-status"><span class="dot dot-blue"></span><span class="method-badge post">POST</span><code style="font-size:10px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">/login</code></div>
+        </div>
+        <div class="page-item">
+          <div class="page-item-left"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></div>
+          <div class="page-status"><span class="dot dot-green"></span><span class="method-badge get">GET</span><code style="font-size:10px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">/dashboard</code></div>
+        </div>
+        <div class="page-item">
+          <div class="page-item-left"><i class="fas fa-file-upload"></i> <span>Resume</span></div>
+          <div class="page-status"><span class="dot dot-blue"></span><span class="method-badge post">POST</span><code style="font-size:10px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">/upload-resume</code></div>
+        </div>
+        <div class="page-item">
+          <div class="page-item-left"><i class="fas fa-cogs"></i> <span>Setup Interview</span></div>
+          <div class="page-status"><span class="dot dot-blue"></span><span class="method-badge post">POST</span><code style="font-size:10px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">/setup</code></div>
+        </div>
+        <div class="page-item">
+          <div class="page-item-left"><i class="fas fa-microphone"></i> <span>Interview Room</span></div>
+          <div class="page-status"><span class="dot dot-green"></span><span class="method-badge get">GET</span><code style="font-size:10px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">/interview/&lt;id&gt;</code></div>
+        </div>
+        <div class="page-item">
+          <div class="page-item-left"><i class="fas fa-chart-bar"></i> <span>Results</span></div>
+          <div class="page-status"><span class="dot dot-green"></span><span class="method-badge get">GET</span><code style="font-size:10px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">/results/&lt;id&gt;</code></div>
+        </div>
+        <div class="page-item">
+          <div class="page-item-left"><i class="fas fa-history"></i> <span>History</span></div>
+          <div class="page-status"><span class="dot dot-green"></span><span class="method-badge get">GET</span><code style="font-size:10px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">/history</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE SCREENS -->
+    <div class="device-panel device-mobile fade-up delay-3">
+      <div class="device-header">
+        <div class="device-icon"><i class="fas fa-mobile-alt"></i></div>
+        <div>
+          <div class="device-title">📱 Mobile App Screens</div>
+          <div class="device-url">Responsive · Same Flask Backend · Port 8000</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
+        <div class="page-list">
+          <div class="page-item"><div class="page-item-left"><i class="fas fa-door-open"></i><span>Splash / Login</span></div><div class="page-status"><span class="dot dot-green"></span></div></div>
+          <div class="page-item"><div class="page-item-left"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div><div class="page-status"><span class="dot dot-green"></span></div></div>
+          <div class="page-item"><div class="page-item-left"><i class="fas fa-sliders-h"></i><span>Setup</span></div><div class="page-status"><span class="dot dot-green"></span></div></div>
+          <div class="page-item"><div class="page-item-left"><i class="fas fa-microphone"></i><span>Interview</span></div><div class="page-status"><span class="dot dot-green"></span></div></div>
+          <div class="page-item"><div class="page-item-left"><i class="fas fa-trophy"></i><span>Results</span></div><div class="page-status"><span class="dot dot-green"></span></div></div>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="ph-bar" style="background:linear-gradient(90deg,var(--accent),var(--accent2));width:70%;margin:0 auto 10px;"></div>
+              <div class="ph-card">
+                <div class="ph-line"></div>
+                <div class="ph-line short"></div>
+                <div class="ph-btn"></div>
+              </div>
+              <div class="ph-card">
+                <div class="ph-line med"></div>
+                <div class="ph-line short"></div>
+              </div>
+              <div class="ph-card">
+                <div class="ph-line"></div>
+                <div class="ph-line short"></div>
+              </div>
+              <div class="ph-nav">
+                <div class="ph-nav-dot" style="background:rgba(99,102,241,0.4);">🏠</div>
+                <div class="ph-nav-dot">🎤</div>
+                <div class="ph-nav-dot">📊</div>
+                <div class="ph-nav-dot">👤</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI PIPELINE + DB SCHEMA -->
+  <div class="two-col">
+
+    <!-- AI PIPELINE -->
+    <div class="db-panel fade-up delay-2">
+      <div class="section-title"><span><i class="fas fa-brain" style="color:var(--orange);"></i> AI Engine Pipeline</span><div class="line"></div></div>
+      <div class="ai-flow">
+        <div class="ai-step">
+          <div class="ai-step-num">1</div>
+          <div class="ai-step-info">
+            <div class="ai-step-title">User Input Collection</div>
+            <div class="ai-step-desc">Job Role · Company · Interview Type · Num Questions</div>
+          </div>
+          <span class="ai-step-tag tag-user">User</span>
+        </div>
+        <div class="vert-arrow"><i class="fas fa-arrow-down"></i></div>
+        <div class="ai-step">
+          <div class="ai-step-num">2</div>
+          <div class="ai-step-info">
+            <div class="ai-step-title">Resume Parsing (PyPDF2)</div>
+            <div class="ai-step-desc">Extract text from uploaded PDF resume</div>
+          </div>
+          <span class="ai-step-tag tag-system">System</span>
+        </div>
+        <div class="vert-arrow"><i class="fas fa-arrow-down"></i></div>
+        <div class="ai-step">
+          <div class="ai-step-num">3</div>
+          <div class="ai-step-info">
+            <div class="ai-step-title">generate_questions()</div>
+            <div class="ai-step-desc">Gemini AI → personalized Q&amp;A list based on role + resume</div>
+          </div>
+          <span class="ai-step-tag tag-ai">AI</span>
+        </div>
+        <div class="vert-arrow"><i class="fas fa-arrow-down"></i></div>
+        <div class="ai-step">
+          <div class="ai-step-num">4</div>
+          <div class="ai-step-info">
+            <div class="ai-step-title">Save to DB (interviews + questions)</div>
+            <div class="ai-step-desc">Store interview_id, session state, questions</div>
+          </div>
+          <span class="ai-step-tag tag-db">DB</span>
+        </div>
+        <div class="vert-arrow"><i class="fas fa-arrow-down"></i></div>
+        <div class="ai-step">
+          <div class="ai-step-num">5</div>
+          <div class="ai-step-info">
+            <div class="ai-step-title">evaluate_answer()</div>
+            <div class="ai-step-desc">Per-question AI scoring → feedback + score (0–10)</div>
+          </div>
+          <span class="ai-step-tag tag-ai">AI</span>
+        </div>
+        <div class="vert-arrow"><i class="fas fa-arrow-down"></i></div>
+        <div class="ai-step">
+          <div class="ai-step-num">6</div>
+          <div class="ai-step-info">
+            <div class="ai-step-title">generate_overall_feedback()</div>
+            <div class="ai-step-desc">Tech · HR · Comm · Confidence scores · roadmap</div>
+          </div>
+          <span class="ai-step-tag tag-ai">AI</span>
+        </div>
+        <div class="vert-arrow"><i class="fas fa-arrow-down"></i></div>
+        <div class="ai-step">
+          <div class="ai-step-num">7</div>
+          <div class="ai-step-info">
+            <div class="ai-step-title">save_performance_details()</div>
+            <div class="ai-step-desc">Persists full breakdown to performance_details table</div>
+          </div>
+          <span class="ai-step-tag tag-db">DB</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DB SCHEMA -->
+    <div class="db-panel fade-up delay-3">
+      <div class="section-title"><span><i class="fas fa-database" style="color:var(--pink);"></i> Database Schema &amp; Connections</span><div class="line"></div></div>
+
+      <div class="table-card">
+        <div class="table-head"><i class="fas fa-user"></i> users</div>
+        <div class="col-list">
+          <span class="col-pill pk">id PK</span>
+          <span class="col-pill">full_name</span>
+          <span class="col-pill">email</span>
+          <span class="col-pill">password</span>
+          <span class="col-pill">role</span>
+          <span class="col-pill">created_at</span>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-head"><i class="fas fa-clipboard-list"></i> interviews</div>
+        <div class="col-list">
+          <span class="col-pill pk">id PK</span>
+          <span class="col-pill fk">user_id FK</span>
+          <span class="col-pill">job_role</span>
+          <span class="col-pill">company</span>
+          <span class="col-pill">interview_type</span>
+          <span class="col-pill">score</span>
+          <span class="col-pill">rating</span>
+          <span class="col-pill">feedback</span>
+          <span class="col-pill">strengths</span>
+          <span class="col-pill">weaknesses</span>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-head"><i class="fas fa-question-circle"></i> questions</div>
+        <div class="col-list">
+          <span class="col-pill pk">id PK</span>
+          <span class="col-pill fk">interview_id FK</span>
+          <span class="col-pill">question_text</span>
+          <span class="col-pill">category</span>
+          <span class="col-pill">difficulty</span>
+          <span class="col-pill">user_answer</span>
+          <span class="col-pill">ai_feedback</span>
+          <span class="col-pill">score</span>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-head"><i class="fas fa-file-alt"></i> resumes</div>
+        <div class="col-list">
+          <span class="col-pill pk">id PK</span>
+          <span class="col-pill fk">user_id FK</span>
+          <span class="col-pill">filename</span>
+          <span class="col-pill">extracted_text</span>
+          <span class="col-pill">extracted_skills</span>
+          <span class="col-pill">uploaded_at</span>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-head"><i class="fas fa-chart-line"></i> performance_details</div>
+        <div class="col-list">
+          <span class="col-pill pk">id PK</span>
+          <span class="col-pill fk">interview_id FK</span>
+          <span class="col-pill">technical_score</span>
+          <span class="col-pill">hr_score</span>
+          <span class="col-pill">communication_score</span>
+          <span class="col-pill">confidence_score</span>
+          <span class="col-pill">skill_gaps</span>
+          <span class="col-pill">improvement_roadmap</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API ENDPOINTS TABLE -->
+  <div class="pipeline-wrap fade-up delay-3">
+    <div class="flow-label"><i class="fas fa-plug"></i> API Endpoints — Web &amp; Mobile Connections</div>
+    <table class="ep-table">
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Endpoint</th>
+          <th>Function</th>
+          <th>Auth</th>
+          <th>Description</th>
+          <th>DB Tables</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/</code></td><td>index()</td><td>—</td><td>Landing page (redirect if logged in)</td><td>—</td></tr>
+        <tr><td><span class="method-badge post">POST</span></td><td><code>/register</code></td><td>register()</td><td>—</td><td>Create new user, hash password</td><td>users</td></tr>
+        <tr><td><span class="method-badge post">POST</span></td><td><code>/login</code></td><td>login()</td><td>—</td><td>Authenticate, set session</td><td>users</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/dashboard</code></td><td>dashboard()</td><td>✅</td><td>Stats, recent interviews, resume status</td><td>users · interviews · resumes</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/resume</code></td><td>resume_page()</td><td>✅</td><td>View/replace resume</td><td>resumes</td></tr>
+        <tr><td><span class="method-badge post">POST</span></td><td><code>/upload-resume</code></td><td>upload_resume()</td><td>✅</td><td>Upload PDF → extract text → save</td><td>resumes</td></tr>
+        <tr><td><span class="method-badge post">POST</span></td><td><code>/setup</code></td><td>setup()</td><td>✅</td><td>Config interview → AI question gen</td><td>interviews · questions · resumes</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/interview/&lt;id&gt;</code></td><td>interview()</td><td>✅</td><td>Live interview room</td><td>interviews · questions</td></tr>
+        <tr><td><span class="method-badge api">JSON</span></td><td><code>/api/submit-answer</code></td><td>submit_answer()</td><td>✅</td><td>Grade answer via AI → save score</td><td>questions</td></tr>
+        <tr><td><span class="method-badge api">JSON</span></td><td><code>/api/finish-interview</code></td><td>finish_interview()</td><td>✅</td><td>Overall AI feedback → save all results</td><td>interviews · performance_details</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/results/&lt;id&gt;</code></td><td>results()</td><td>✅</td><td>Full interview report + analytics</td><td>interviews · questions · performance_details</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/history</code></td><td>history()</td><td>✅</td><td>All past interviews list</td><td>interviews</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/logout</code></td><td>logout()</td><td>✅</td><td>Clear session</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Interview<span>Master</span> · Full Pipeline Tracker · Built with Flask + Gemini AI · 2026</p>
+  <p style="margin-top:6px;">Every route, every pipeline, every connection — visualized.</p>
+</footer>
+
+<script>
+// Animate pipeline nodes on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.pipe-node,.ai-step,.stat-box,.table-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(12px)';
+  el.style.transition = 'opacity .4s ease, transform .4s ease';
+  observer.observe(el);
+});
+
+// Highlight on click
+document.querySelectorAll('.pipe-node').forEach(node => {
+  node.addEventListener('click', function() {
+    document.querySelectorAll('.pipe-node').forEach(n => n.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Counter animation
+document.querySelectorAll('.stat-num').forEach(el => {
+  const target = parseInt(el.textContent);
+  let count = 0;
+  const step = () => {
+    count++;
+    el.textContent = count;
+    if (count < target) setTimeout(step, 120);
+  };
+  setTimeout(step, 500);
+});
+</script>
+</body>
+</html>

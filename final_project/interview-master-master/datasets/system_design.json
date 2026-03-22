@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Design a URL shortener like TinyURL",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Design an instant messaging app like WhatsApp",
+        "difficulty": "Hard",
+        "category": "Technical"
+    },
+    {
+        "question": "Design Netflix or a video streaming service",
+        "difficulty": "Hard",
+        "category": "Technical"
+    },
+    {
+        "question": "How do you structure microservices communication?",
+        "difficulty": "Medium",
+        "category": "Technical"
+    }
+]

@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Fibonacci Number using Memoization and Tabulation",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Longest Common Subsequence (LCS)",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "0/1 Knapsack Problem",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Edit Distance (Levenshtein distance) between two strings",
+        "difficulty": "Hard",
+        "category": "Technical"
+    }
+]

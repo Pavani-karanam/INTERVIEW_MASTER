@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Explain Encapsulation, Abstraction, Inheritance, and Polymorphism",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Difference between Interface and Abstract Class",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "What is Method Overloading vs Method Overriding?",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Design a generic Object-Oriented Parking Lot System",
+        "difficulty": "Hard",
+        "category": "Technical"
+    }
+]

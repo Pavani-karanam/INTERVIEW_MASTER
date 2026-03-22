@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Find the nth highest salary from an Employee table",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Write a query to find duplicates in a table",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Inner Join vs Left Join vs Right Join",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Optimize a slow-running complex SQL query",
+        "difficulty": "Hard",
+        "category": "Technical"
+    }
+]

@@ -1,0 +1,74 @@
+[
+    {
+        "id": "arrays",
+        "name": "Arrays",
+        "count": 85,
+        "icon": "bar-chart"
+    },
+    {
+        "id": "strings",
+        "name": "Strings",
+        "count": 72,
+        "icon": "font"
+    },
+    {
+        "id": "dp",
+        "name": "DP",
+        "count": 68,
+        "icon": "puzzle-piece"
+    },
+    {
+        "id": "trees",
+        "name": "Trees",
+        "count": 54,
+        "icon": "tree"
+    },
+    {
+        "id": "graphs",
+        "name": "Graphs",
+        "count": 49,
+        "icon": "project-diagram"
+    },
+    {
+        "id": "sorting",
+        "name": "Sorting",
+        "count": 38,
+        "icon": "sort"
+    },
+    {
+        "id": "sql",
+        "name": "SQL",
+        "count": 60,
+        "icon": "database"
+    },
+    {
+        "id": "system-design",
+        "name": "System Design",
+        "count": 45,
+        "icon": "sitemap"
+    },
+    {
+        "id": "oop",
+        "name": "OOP",
+        "count": 40,
+        "icon": "bullseye"
+    },
+    {
+        "id": "react",
+        "name": "React",
+        "count": 33,
+        "icon": "atom"
+    },
+    {
+        "id": "python",
+        "name": "Python",
+        "count": 55,
+        "icon": "python"
+    },
+    {
+        "id": "behavioral",
+        "name": "Behavioral",
+        "count": 30,
+        "icon": "handshake"
+    }
+]

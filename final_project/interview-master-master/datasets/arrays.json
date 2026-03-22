@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Find the maximum subarray sum (Kadane's Algorithm)",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Given an array, rotate it by k elements",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Two Sum - Find indices of two numbers that add up to target",
+        "difficulty": "Easy",
+        "category": "Technical"
+    },
+    {
+        "question": "Merge two sorted arrays without extra space",
+        "difficulty": "Hard",
+        "category": "Technical"
+    }
+]

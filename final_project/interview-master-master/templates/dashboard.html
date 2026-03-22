@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Interview Master{% endblock %}
+
+{% block body %}
+<!-- Top Nav -->
+<nav class="navbar glass-nav">
+    <div class="nav-container">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">
+            <i class="fas fa-bolt"></i>
+            <span>Interview<strong>Master</strong></span>
+        </a>
+        <div class="nav-links">
+            <a href="{{ url_for('history') }}" class="nav-link" id="navHistory"><i class="fas fa-history"></i>
+                History</a>
+            <div class="nav-user">
+                <div class="user-avatar">{{ session.user_name[0] | upper }}</div>
+                <span class="user-name">{{ session.user_name }}</span>
+            </div>
+            <a href="{{ url_for('logout') }}" class="nav-btn nav-btn-outline" id="navLogout"><i
+                    class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="dashboard-main">
+    <div class="container">
+        <!-- Welcome + AI Interviewer -->
+        <div class="dashboard-welcome animate-fade-in">
+            <div class="welcome-text">
+                <h1>Welcome back, <span class="gradient-text">{{ session.user_name }}</span>! 👋</h1>
+                <p><i class="fas fa-id-badge" style="color:var(--accent-1)"></i> &nbsp;<strong>{{ user_role }}</strong>
+                </p>
+                <p style="margin-top:8px;color:var(--text-secondary)">Ready to ace your next interview? Start a new mock
+                    session or review your past performance.</p>
+                <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
+                    <a href="{{ url_for('setup') }}" class="btn btn-primary btn-lg" id="startInterviewBtn">
+                        <i class="fas fa-play"></i>
+                        <span>New Interview</span>
+                    </a>
+                    <a href="{{ url_for('resume_page') }}" class="btn btn-glass btn-lg" id="manageResumeBtn">
+                        <i class="fas fa-file-upload"></i>
+                        <span>{% if resume %}My Resume{% else %}Upload Resume{% endif %}</span>
+                    </a>
+                </div>
+            </div>
+            <!-- 3D AI Interviewer Image -->
+            <div class="ai-interviewer-wrap">
+                <div class="ai-interviewer-glow"></div>
+                <div class="ai-interviewer-card">
+                    <div class="ai-interviewer-ring"></div>
+                    <img src="{{ url_for('static', filename='images/ai_interviewer.png') }}" alt="AI Interviewer"
+                        class="ai-interviewer-img" id="aiInterviewerImg">
+                    <div class="ai-interviewer-badge">
+                        <span class="ai-badge-dot"></span>
+                        AI Interviewer Ready
+                    </div>
+                </div>
+                <div class="ai-interviewer-label">
+                    <i class="fas fa-robot"></i> Powered by Gemini AI
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row animate-fade-in">
+            <div class="stat-card glass-card">
+                <div class="stat-card-icon gradient-bg-1"><i class="fas fa-clipboard-check"></i></div>
+                <div class="stat-card-info">
+                    <span class="stat-card-number">{{ total_interviews }}</span>
+                    <span class="stat-card-label">Total Interviews</span>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-card-icon gradient-bg-2"><i class="fas fa-star"></i></div>
+                <div class="stat-card-info">
+                    <span class="stat-card-number">{{ avg_score }}/10</span>
+                    <span class="stat-card-label">Average Score</span>
+                </div>
+            </div>
+            <a href="{{ url_for('resume_page') }}" class="stat-card glass-card" id="resumeStatCard"
+                style="text-decoration:none;cursor:pointer;transition:var(--transition);"
+                title="{% if resume %}View / Replace Resume{% else %}Upload Resume{% endif %}">
+                <div class="stat-card-icon {% if resume %}gradient-bg-3{% else %}gradient-bg-4{% endif %}">
+                    <i class="fas fa-{% if resume %}check{% else %}upload{% endif %}"></i>
+                </div>
+                <div class="stat-card-info">
+                    <span class="stat-card-number">{% if resume %}✓ Saved{% else %}Upload{% endif %}</span>
+                    <span class="stat-card-label">Resume</span>
+                </div>
+            </a>
+            <div class="stat-card glass-card">
+                <div class="stat-card-icon gradient-bg-5"><i class="fas fa-trophy"></i></div>
+                <div class="stat-card-info">
+                    <span class="stat-card-number">
+                        {% if avg_score >= 8 %}Excellent
+                        {% elif avg_score >= 6 %}Good
+                        {% elif avg_score >= 4 %}Average
+                        {% elif total_interviews > 0 %}Improving
+                        {% else %}New{% endif %}
+                    </span>
+                    <span class="stat-card-label">Performance</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Interviews -->
+        <div class="dashboard-section animate-fade-in">
+            <div class="section-top">
+                <h2><i class="fas fa-clock"></i> Recent Interviews</h2>
+                {% if interviews|length > 0 %}
+                <a href="{{ url_for('history') }}" class="btn btn-glass btn-sm">View All</a>
+                {% endif %}
+            </div>
+            {% if interviews|length > 0 %}
+            <div class="interviews-table-wrap glass-card">
+                <table class="interviews-table" id="recentInterviewsTable">
+                    <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th>Company</th>
+                            <th>Type</th>
+                            <th>Score</th>
+                            <th>Rating</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for interview in interviews[:5] %}
+                        <tr>
+                            <td><strong>{{ interview.job_role }}</strong></td>
+                            <td>{{ interview.company }}</td>
+                            <td><span class="badge badge-{{ interview.interview_type }}">{{ interview.interview_type |
+                                    capitalize }}</span></td>
+                            <td>
+                                <div class="score-mini">
+                                    <div class="score-bar-mini">
+                                        <div class="score-fill-mini"
+                                            style="width: {{ (interview.score / 10 * 100) | int }}%"></div>
+                                    </div>
+                                    <span>{{ interview.score }}/10</span>
+                                </div>
+                            </td>
+                            <td><span class="rating-badge rating-{{ interview.rating | lower | replace(' ', '-') }}">{{
+                                    interview.rating or 'Pending' }}</span></td>
+                            <td>{{ interview.created_at[:10] }}</td>
+                            <td>
+                                <a href="{{ url_for('results', interview_id=interview.id) }}"
+                                    class="btn btn-glass btn-xs" id="viewResult{{ interview.id }}">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state glass-card">
+                <div class="empty-icon"><i class="fas fa-rocket"></i></div>
+                <h3>No interviews yet</h3>
+                <p>Start your first mock interview to see your results here!</p>
+                <a href="{{ url_for('setup') }}" class="btn btn-primary" id="emptyStartBtn">
+                    <i class="fas fa-play"></i> Start First Interview
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}

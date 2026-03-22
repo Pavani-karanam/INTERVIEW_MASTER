@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Tell me about a time you had a conflict with a colleague.",
+        "difficulty": "Medium",
+        "category": "HR/Behavioral"
+    },
+    {
+        "question": "Describe a project that failed and what you learned from it.",
+        "difficulty": "Medium",
+        "category": "HR/Behavioral"
+    },
+    {
+        "question": "Where do you see yourself in 5 years?",
+        "difficulty": "Easy",
+        "category": "HR/Behavioral"
+    },
+    {
+        "question": "Why should we hire you over other candidates?",
+        "difficulty": "Medium",
+        "category": "HR/Behavioral"
+    }
+]

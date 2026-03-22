@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Implement Breadth First Search (BFS)",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Implement Depth First Search (DFS)",
+        "difficulty": "Medium",
+        "category": "Technical"
+    },
+    {
+        "question": "Find shortest path using Dijkstra's Algorithm",
+        "difficulty": "Hard",
+        "category": "Technical"
+    },
+    {
+        "question": "Detect a cycle in a directed graph",
+        "difficulty": "Medium",
+        "category": "Technical"
+    }
+]
